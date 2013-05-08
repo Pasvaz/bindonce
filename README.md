@@ -64,7 +64,32 @@ Here is how we can solve this issue with **bindonce**:
 	<p bo-class="{'fancy':Person.isNice}" bo-html="Person.story"></p>
 </div>
 ```
-`bindonce="Person"` does the trick, any `bo-*` attribute belonging to `bindonce` waits until the parent `bindonce="{somedata}"` is validated and only then it renders its content. Once the scope contains the value `Person` then every bo-* children get filled with the proper values. In order to accomplish this job, **bindonce** uses just one temporary watcher, no matters how many children need to be rendered, as soon as it gets `Person` the watcher is properly removed.
+`bindonce="Person"` does the trick, any `bo-*` attribute belonging to `bindonce` waits until the parent `bindonce="{somedata}"` is validated and only then it renders its content. Once the scope contains the value `Person` then every bo-* children get filled with the proper values. In order to accomplish this task, **bindonce** uses just **one** temporary watcher, no matters how many children need to be rendered. As soon as it gets `Person` the watcher is properly removed. If the $scope contains already the data bindonce is looking for, then it doesn't create the temporary watcher and starts rendering its children.
+
+You may have noticed that the first example didn't use any value with the attribute `bindonce`:
+```html
+<ul>
+	<li bindonce ng-repeat="person in Persons">
+	...
+```
+when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defined because `ng-repeat` creates the directives only when `person` exists, anyway you can use `<li bindonce="person" ng-repeat="person in Persons">` it doesn't make any difference.
+
+## Attribute Usage
+| 	attribute | 	Description | 	Example  |
+| ------------- |:-------------:| -----:|
+| `bindonce="{somedata}"`| **bindonce** is the main directive, `{somedata}` is optional, if it's present it forces bindonce to wait until `somedata` is defined before to render its children  | `bindonce="Person"` |
+| `bo-show = "condition"`     | identical to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
+| `bo-hide = "condition"`     | identical to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
+| `bo-text = "text"`      | evaluates "somedata.text" and print it as text inside the element | `bo-text="Person.name"` |
+| `bo-html = "markup"`      | evaluates "somedata.markup" and render it as html inside the element |`bo-html="Person.description"`|
+| `bo-href = "url"`      | identical to `ng-href` but doesn't use watchers. Heads up! you can't use {{}} inside the url like `<a bo-href="/profile{{Person.id}}">` instead do `<a bo-href="'/profile' + Person.id">` |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
+| `bo-src = "url"`      | identical to `ng-src` but doesn't use watchers |`<img bo-src="picture" bo-alt="title">`|
+| `bo-class = "class:condition"`      | identical to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
+| `bo-alt = "text"`      | evaluates "text" and render it as `alt` for the element |`<img bo-src="picture" bo-alt="title">`|
+| `bo-title = "text"`      | evaluates "text" and render it as `title` for the element |`<img bo-src="picture" bo-title="title">`|
+
+## Todo
+Examples and Tests
 
 ## License
 MIT
