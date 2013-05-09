@@ -1,8 +1,8 @@
 {
   "name": "angular-bindonce",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "bindonce.js",
-  "description": "AngularStrap - Twitter Bootstrap directives for AngularJS",
+  "description": "Zero watchers binding directives for AngularJS",
   "homepage": "https://github.com/Pasvaz/bindonce",
   "author": "Pasquale Vazzana <pasqualevazzana@gmail.com>",
   "repository": {
@@ -23,6 +23,7 @@
     "angular",
     "directive",
     "binding",
+    "watcher",
     "bindonce"
   ]
 }
