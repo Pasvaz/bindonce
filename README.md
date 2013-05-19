@@ -87,6 +87,7 @@ when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defin
 | `bo-class = "class:condition"`      | identical to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
 | `bo-alt = "text"`      | evaluates "text" and render it as `alt` for the element |`<img bo-src="picture" bo-alt="title">`|
 | `bo-title = "text"`      | evaluates "text" and render it as `title` for the element |`<img bo-src="picture" bo-title="title">`|
+| `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<img bo-src="picture" bo-id="id">`|
 
 ## Todo
 Examples and Tests
