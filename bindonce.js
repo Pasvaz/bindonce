@@ -19,7 +19,7 @@
  		}
  		return value;
  	}
-
+
  	return {
  		restrict: "AM",
  		controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
@@ -149,7 +149,7 @@ angular.forEach({
 	'boHref' : 'href',
 	'boAlt' : 'alt',
 	'boTitle' : 'title',
-	'boId' : 'id'
+	'boId' : 'id',
 	'boStyle' : 'style'
 }, 
 function(tag, attribute) 
