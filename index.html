@@ -31,38 +31,178 @@
         <hr>
 
         <section id="main_content">
-          <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<article class="markdown-body entry-content" itemprop="mainContentOfPage"><h1>
+<a name="bindonce" class="anchor" href="#bindonce"><span class="octicon octicon-link"></span></a>Bindonce</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>High performance binding for AngularJs</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<ul>
+<li>download, clone or fork it or install it using <a href="http://twitter.github.com/bower/">bower</a> <code>bower install angular-bindonce</code>
+</li>
+<li>Include the <code>bindonce.js</code> script provided by this component into your app.</li>
+<li>Add <code>'pasvaz.bindonce'</code> as a module dependency to your app: <code>angular.module('app', ['pasvaz.bindonce'])</code>
+</li>
+</ul><h2>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>AngularJs provides a great data binding system but if you abuse of it the page can run into some performance issues, it's known that more of 2000 watchers can lag the UI and that amount can be reached easily if you don't pay attention to the data-binding. Sometime you really need to bind your data using watchers, especially for SPA because the data are updated in real time, but often you can avoid it with some efforts, most of the data presented in your page, once rendered, are immutable so you shouldn't keep watching them for changes.</p>
+
+<p>For instance, take a look to this snippet:</p>
+
+<div class="highlight"><pre><span class="nt">&lt;ul&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">ng-repeat=</span><span class="s">"person in Persons"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">"#/people/{{person.id}}"</span><span class="nt">&gt;&lt;img</span> <span class="na">ng-src=</span><span class="s">"{{person.imageUrl}}"</span><span class="nt">&gt;&lt;/a&gt;</span>
+        <span class="nt">&lt;a</span> <span class="na">ng-href=</span><span class="s">"#/people/{{person.id}}"</span><span class="nt">&gt;&lt;span</span> <span class="na">ng-bind=</span><span class="s">"person.name"</span><span class="nt">&gt;&lt;/span&gt;&lt;/a&gt;</span>
+        <span class="nt">&lt;p</span> <span class="na">ng-class=</span><span class="s">"{'cycled':person.generated}"</span> <span class="na">ng-bind-html-unsafe=</span><span class="s">"person.description"</span><span class="nt">&gt;&lt;/p&gt;</span>
+    <span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</pre></div>
+
+<p>Angular internally creates a <code>$watch</code> for each <code>ng-*</code> directive in order to keep the data up to date, so in this example just for displaying few info it creates 6 + 1 <em>(ngRepeatWatch)</em> watchers per <code>person</code>, even if the <code>person</code> is supposed to remain the same once shown. Iterate this amount for each person and you can have an idea about how easy is to reach 2000 watchers. Now if you need it because those data could change while you show the page or are bound to some models, it's ok. But most of the time they are static data that don't change once rendered. This is where <strong>bindonce</strong> can really help you.</p>
+
+<p>The above example done with <strong>bindonce</strong>:</p>
+
+<div class="highlight"><pre><span class="nt">&lt;ul&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">bindonce</span> <span class="na">ng-repeat=</span><span class="s">"person in Persons"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;a</span> <span class="na">bo-href=</span><span class="s">"'#/people/' + person.id"</span><span class="nt">&gt;&lt;img</span> <span class="na">bo-src=</span><span class="s">"person.imageUrl"</span><span class="nt">&gt;&lt;/a&gt;</span>
+        <span class="nt">&lt;a</span> <span class="na">bo-href=</span><span class="s">"'#/people/' + person.id"</span> <span class="na">bo-text=</span><span class="s">"person.name"</span><span class="nt">&gt;&lt;/a&gt;</span>
+        <span class="nt">&lt;p</span> <span class="na">bo-class=</span><span class="s">"{'cycled':person.generated}"</span> <span class="na">bo-html=</span><span class="s">"person.description"</span><span class="nt">&gt;&lt;/p&gt;</span>
+    <span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</pre></div>
+
+<p>Now this example uses <strong>0 watches</strong> per <code>person</code> and renders exactly the same result as the above that uses ng-*. <em>(Angular still uses 1 watcher for ngRepeatWatch)</em></p>
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="the-smart-approach" class="anchor" href="#the-smart-approach"><span class="octicon octicon-link"></span></a>The smart approach</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>OK until here nothing completely new, with a bit of efforts you could create your own directive and render the <code>person</code> inside the <code>link</code> function, or you could use <a href="https://github.com/abourget/abourget-angular">watch fighters</a> that has a similar approach, but there is still one problem that you have to face and <strong>bindonce</strong> already handles it: <em>the existence of the data when the directive renders the content</em>. Usually the directives, unless you use watchers or bind their attributes to the scope (still a watcher), render the content when they are loaded into the markup, if at that given time your data are not available the directive can't render it. Bindonce can wait until the data are ready before to render the content. 
+Let's give a look to the follow snippet to better understand the concept:</p>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<div class="highlight"><pre><span class="nt">&lt;span</span> <span class="na">my-custom-set-text=</span><span class="s">"Person.firstname"</span><span class="nt">&gt;&lt;/span&gt;</span>
+<span class="nt">&lt;span</span> <span class="na">my-custom-set-text=</span><span class="s">"Person.lastname"</span><span class="nt">&gt;&lt;/span&gt;</span>
+...
+<span class="nt">&lt;script&gt;</span>
+<span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">'testApp'</span><span class="p">,</span> <span class="p">[])</span>
+<span class="p">.</span><span class="nx">directive</span><span class="p">(</span><span class="s1">'myCustomSetText'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">link</span><span class="o">:</span><span class="kd">function</span> <span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">elem</span><span class="p">,</span> <span class="nx">attr</span><span class="p">,</span> <span class="nx">ctrl</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">elem</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">$eval</span><span class="p">(</span><span class="nx">attr</span><span class="p">.</span><span class="nx">myCustomSetText</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>This basic directive works as expected, it renders the <code>Person</code> datas and it doesn't use any watcher. However, if <code>Person</code> is not yet available inside the $scope when the page is loaded (say we get <code>Person</code> via $http or via $resource), the directive is useless, <code>scope.$eval(attr.myCustomSetText)</code> renders just nothing and exit.</p>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<p>Here is how we can solve this issue with <strong>bindonce</strong>:</p>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">bindonce=</span><span class="s">"Person"</span> <span class="na">bo-title=</span><span class="s">"Person.title"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;span</span> <span class="na">bo-text=</span><span class="s">"Person.firstname"</span><span class="nt">&gt;&lt;/span&gt;</span>
+    <span class="nt">&lt;span</span> <span class="na">bo-text=</span><span class="s">"Person.lastname"</span><span class="nt">&gt;&lt;/span&gt;</span>
+    <span class="nt">&lt;img</span> <span class="na">bo-src=</span><span class="s">"Person.picture"</span> <span class="na">bo-alt=</span><span class="s">"Person.title"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">bo-class=</span><span class="s">"{'fancy':Person.isNice}"</span> <span class="na">bo-html=</span><span class="s">"Person.story"</span><span class="nt">&gt;&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<p><code>bindonce="Person"</code> does the trick, any <code>bo-*</code> attribute belonging to <code>bindonce</code> waits until the parent <code>bindonce="{somedata}"</code> is validated and only then it renders its content. Once the scope contains the value <code>Person</code> then every bo-* children get filled with the proper values. In order to accomplish this task, <strong>bindonce</strong> uses just <strong>one</strong> temporary watcher, no matters how many children need to be rendered. As soon as it gets <code>Person</code> the watcher is properly removed. If the $scope contains already the data bindonce is looking for, then it doesn't create the temporary watcher and starts rendering its children.</p>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-        </section>
+<p>You may have noticed that the first example didn't use any value with the attribute <code>bindonce</code>:</p>
+
+<div class="highlight"><pre><span class="nt">&lt;ul&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">bindonce</span> <span class="na">ng-repeat=</span><span class="s">"person in Persons"</span><span class="nt">&gt;</span>
+    ...
+</pre></div>
+
+<p>when used with <code>ng-repeat</code> <code>bindonce</code> doesn't need to check if <code>person</code> is defined because <code>ng-repeat</code> creates the directives only when <code>person</code> exists, anyway you can use <code>&lt;li bindonce="person" ng-repeat="person in Persons"&gt;</code> it doesn't make any difference.</p>
+
+<h2>
+<a name="attribute-usage" class="anchor" href="#attribute-usage"><span class="octicon octicon-link"></span></a>Attribute Usage</h2>
+
+<table>
+<tbody><tr>
+<th>attribute</th>
+<th align="center">Description</th>
+<th align="right">Example</th>
+</tr>
+<tr>
+<td><code>bindonce="{somedata}"</code></td>
+<td align="center">
+<strong>bindonce</strong> is the main directive, <code>{somedata}</code> is optional, if it's present it forces bindonce to wait until <code>somedata</code> is defined before to render its children</td>
+<td align="right"><code>bindonce="Person"</code></td>
+</tr>
+<tr>
+<td><code>bo-show = "condition"</code></td>
+<td align="center">identical to <code>ng-show</code> but doesn't use watchers</td>
+<td align="right"><code>&lt;ANY bo-show="Person.isPublic"&gt;&lt;/ANY&gt;</code></td>
+</tr>
+<tr>
+<td><code>bo-hide = "condition"</code></td>
+<td align="center">identical to <code>ng-hide</code> but doesn't use watchers</td>
+<td align="right"><code>&lt;ANY bo-hide="Person.isPrivate"&gt;&lt;/ANY&gt;</code></td>
+</tr>
+<tr>
+<td><code>bo-text = "text"</code></td>
+<td align="center">evaluates "somedata.text" and print it as text inside the element</td>
+<td align="right"><code>bo-text="Person.name"</code></td>
+</tr>
+<tr>
+<td><code>bo-html = "markup"</code></td>
+<td align="center">evaluates "somedata.markup" and render it as html inside the element</td>
+<td align="right"><code>bo-html="Person.description"</code></td>
+</tr>
+<tr>
+<td><code>bo-href = "url"</code></td>
+<td align="center">identical to <code>ng-href</code> but doesn't use watchers. Heads up! you can't use {{}} inside the url like <code>&lt;a bo-href="/profile{{Person.id}}"&gt;</code> instead do <code>&lt;a bo-href="'/profile' + Person.id"&gt;</code>
+</td>
+<td align="right">
+<code>&lt;a bo-href="'/profile' + Person.id"&gt;&lt;/a&gt;</code> or <code>&lt;a bo-href="link" bo-text="Link"&gt;&lt;/a&gt;</code>
+</td>
+</tr>
+<tr>
+<td><code>bo-src = "url"</code></td>
+<td align="center">identical to <code>ng-src</code> but doesn't use watchers</td>
+<td align="right"><code>&lt;img bo-src="picture" bo-alt="title"&gt;</code></td>
+</tr>
+<tr>
+<td><code>bo-class = "class:condition"</code></td>
+<td align="center">identical to <code>ng-class</code> but doesn't use watchers</td>
+<td align="right"><code>&lt;span bo-class="{'fancy':Person.condition}"&gt;</code></td>
+</tr>
+<tr>
+<td><code>bo-alt = "text"</code></td>
+<td align="center">evaluates "text" and render it as <code>alt</code> for the element</td>
+<td align="right"><code>&lt;img bo-src="picture" bo-alt="title"&gt;</code></td>
+</tr>
+<tr>
+<td><code>bo-title = "text"</code></td>
+<td align="center">evaluates "text" and render it as <code>title</code> for the element</td>
+<td align="right"><code>&lt;img bo-src="picture" bo-title="title"&gt;</code></td>
+</tr>
+<tr>
+<td><code>bo-id = "text"</code></td>
+<td align="center">evaluates "text" and render it as <code>id</code> for the element</td>
+<td align="right"><code>&lt;img bo-src="picture" bo-id="id"&gt;</code></td>
+</tr>
+<tr>
+<td><code>bo-style = "text"</code></td>
+<td align="center">evaluates "text" and render it as <code>style</code> for the element</td>
+<td align="right"><code>&lt;img bo-src="picture" bo-style="style"&gt;</code></td>
+</tr>
+</tbody></table><h2>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>Todo</h2>
+
+<p>Examples and Tests</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>MIT</p></article>
+          </section>
 
         <footer>
           Bindonce is maintained by <a href="https://github.com/Pasvaz">Pasvaz</a><br>
