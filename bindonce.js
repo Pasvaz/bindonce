@@ -19,7 +19,7 @@
  		}
  		return value;
  	}
-
+
  	return {
  		restrict: "AM",
  		controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
