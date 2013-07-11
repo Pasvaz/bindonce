@@ -112,7 +112,8 @@
 							case 'title':
 							case 'id':
 							case 'style':
-							binder.element.attr(binder.attr, value); 
+							case 'value':
+							binder.element.attr(binder.attr, value);
 							break;
 						}
 					}
@@ -150,9 +151,10 @@ angular.forEach({
 	'boAlt' : 'alt',
 	'boTitle' : 'title',
 	'boId' : 'id',
-	'boStyle' : 'style'
-}, 
-function(tag, attribute) 
+	'boStyle' : 'style',
+	'boValue' : 'value'
+},
+function(tag, attribute)
 {
 	var childPriority = 200;
 	return angular.module('pasvaz.bindonce').directive(attribute, function() 
