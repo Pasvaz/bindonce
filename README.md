@@ -80,6 +80,7 @@ when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defin
 | `bindonce="{somedata}"`| **bindonce** is the main directive, `{somedata}` is optional, if it's present it forces bindonce to wait until `somedata` is defined before to render its children  | `bindonce="Person"` |
 | `bo-show = "condition"`     | identical to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
 | `bo-hide = "condition"`     | identical to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
+| `bo-disabled = "condition"` | identical to `ng-disabled` but doesn't use watchers |`<input bo-disabled="prop.isDisabled">`|
 | `bo-text = "text"`      | evaluates "somedata.text" and print it as text inside the element | `bo-text="Person.name"` |
 | `bo-html = "markup"`      | evaluates "somedata.markup" and render it as html inside the element |`bo-html="Person.description"`|
 | `bo-href = "url"`      | identical to `ng-href` but doesn't use watchers. Heads up! you can't use {{}} inside the url like `<a bo-href="/profile{{Person.id}}">` instead do `<a bo-href="'/profile' + Person.id">` |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
@@ -90,6 +91,7 @@ when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defin
 | `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<img bo-src="picture" bo-id="id">`|
 | `bo-style = "text"`      | evaluates "text" and render it as `style` for the element |`<img bo-src="picture" bo-style="style">`|
 | `bo-value = "text"`      | evaluates "text" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
+| `bo-name = "text"`      | evaluates "text" and render it as `name` for the element |`<input type="radio" bo-name="value">`|
 
 ## Todo
 Examples and Tests

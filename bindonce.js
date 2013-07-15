@@ -29,6 +29,12 @@
  				var hide = (attr == 'hide') ? '' : 'none';
  				elm.css('display', toBoolean(value) ? show : hide);
  			}
+ 			var boolBinder = function(elm, attr, value)
+ 			{
+ 				if (toBoolean(value)) {
+ 					elm.attr(attr, attr);
+ 				}
+ 			}
  			var classBinder = function(elm, value)
  			{
  				if (angular.isObject(value) && !angular.isArray(value)) {
@@ -97,6 +103,9 @@
 							case 'show':
 							showHideBinder(binder.element, binder.attr, value);
 							break;
+							case 'disabled':
+							boolBinder(binder.element, binder.attr, value);
+							break;
 							case 'class':
 							classBinder(binder.element, value);
 							break;
@@ -113,6 +122,7 @@
 							case 'id':
 							case 'style':
 							case 'value':
+							case 'name':
 							binder.element.attr(binder.attr, value);
 							break;
 						}
@@ -143,6 +153,7 @@
 angular.forEach({
 	'boShow' : 'show',
 	'boHide' : 'hide',
+	'boDisabled' : 'disabled',
 	'boClass' : 'class',
 	'boText' : 'text',
 	'boHtml' : 'html',
@@ -152,7 +163,8 @@ angular.forEach({
 	'boTitle' : 'title',
 	'boId' : 'id',
 	'boStyle' : 'style',
-	'boValue' : 'value'
+	'boValue' : 'value',
+	'boName' : 'name'
 },
 function(tag, attribute)
 {
