@@ -113,6 +113,7 @@
 							case 'id':
 							case 'style':
 							case 'value':
+							case 'name':
 							binder.element.attr(binder.attr, value);
 							break;
 						}
@@ -152,7 +153,8 @@ angular.forEach({
 	'boTitle' : 'title',
 	'boId' : 'id',
 	'boStyle' : 'style',
-	'boValue' : 'value'
+	'boValue' : 'value',
+	'boName' : 'name'
 },
 function(tag, attribute)
 {
