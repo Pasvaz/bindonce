@@ -114,6 +114,15 @@
 							case 'style':
 							case 'value':
 							binder.element.attr(binder.attr, value);
+							case 'data':
+							angular.forEach(binder.attrs, function(attrValue, attrKey) {
+ 								var newAttr, newValue;
+ 								if (attrKey.match(/^boData/) && binder.attrs[attrKey]) {
+ 									newAttr = attrKey.replace(/^bo/, '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+ 									newValue = $scope.$eval(binder.attrs[attrKey]);
+ 									binder.element.attr(newAttr, newValue);
+ 								}
+ 							});
 							break;
 						}
 					}
@@ -152,7 +161,8 @@ angular.forEach({
 	'boTitle' : 'title',
 	'boId' : 'id',
 	'boStyle' : 'style',
-	'boValue' : 'value'
+	'boValue' : 'value',
+	'boData' : 'data'
 },
 function(tag, attribute)
 {
@@ -186,7 +196,7 @@ function(tag, attribute)
 						throw Error("No bindonce controller: " + name);
 					}
 				}
-				bindonceController.addBinder({element: elm, attr:tag, value: attrs[attribute], group: name});
+				bindonceController.addBinder({element: elm, attr:tag, attrs:attrs, value: attrs[attribute], group: name});
 			}
 		}
 	});

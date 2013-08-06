@@ -90,6 +90,7 @@ when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defin
 | `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<img bo-src="picture" bo-id="id">`|
 | `bo-style = "text"`      | evaluates "text" and render it as `style` for the element |`<img bo-src="picture" bo-style="style">`|
 | `bo-value = "text"`      | evaluates "text" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
+| `bo-data bo-data-foo = "text"`      | evaluates "text" and render it as a data attribute for the element |`<div bo-data bo-data-foo="bar"></div>`|
 
 ## Todo
 Examples and Tests
