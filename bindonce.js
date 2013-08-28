@@ -106,12 +106,14 @@
 							case 'html':
 							binder.element.html(value);
 							break;
+							case 'style':
+							binder.element.css(value);
+							break;
 							case 'src':
 							case 'href':
 							case 'alt':
 							case 'title':
 							case 'id':
-							case 'style':
 							case 'value':
 							binder.element.attr(binder.attr, value);
 							break;
