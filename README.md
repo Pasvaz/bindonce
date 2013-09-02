@@ -83,12 +83,12 @@ when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defin
 | `bo-text = "text"`      | evaluates "somedata.text" and print it as text inside the element | `bo-text="Person.name"` |
 | `bo-html = "markup"`      | evaluates "somedata.markup" and render it as html inside the element |`bo-html="Person.description"`|
 | `bo-href = "url"`      | identical to `ng-href` but doesn't use watchers. Heads up! you can't use {{}} inside the url like `<a bo-href="/profile{{Person.id}}">` instead do `<a bo-href="'/profile' + Person.id">` |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
-| `bo-src = "url"`      | identical to `ng-src` but doesn't use watchers |`<img bo-src="picture" bo-alt="title">`|
+| `bo-src = "url"`      | identical to `ng-src` but doesn't use watchers |`<img bo-src="{{picture}}" bo-alt="title">`|
 | `bo-class = "class:condition"`      | identical to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
-| `bo-alt = "text"`      | evaluates "text" and render it as `alt` for the element |`<img bo-src="picture" bo-alt="title">`|
-| `bo-title = "text"`      | evaluates "text" and render it as `title` for the element |`<img bo-src="picture" bo-title="title">`|
-| `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<img bo-src="picture" bo-id="id">`|
-| `bo-style = "text"`      | evaluates "text" and render it as `style` for the element |`<img bo-src="picture" bo-style="style">`|
+| `bo-alt = "text"`      | evaluates "text" and render it as `alt` for the element |`<ANY bo-alt="title">`|
+| `bo-title = "text"`      | evaluates "text" and render it as `title` for the element |`<ANY bo-title="title">`|
+| `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<ANY bo-id="id">`|
+| `bo-style = "text"`      | identical to `ng-style` but doesn't use watchers |`<ANY bo-style="{color:red}">`|
 | `bo-value = "text"`      | evaluates "text" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
 
 ## Todo
