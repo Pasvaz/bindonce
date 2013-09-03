@@ -88,10 +88,14 @@ That's why by default the `bo-href` doesn't use interpolation nor watchers, the 
 | `bo-hide = "condition"`     | equivalent to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
 | `bo-text = "text"`      | evaluates "text" and print it as text inside the element | `bo-text="Person.name"` |
 | `bo-html = "markup"`      | evaluates "markup" and render it as html inside the element |`bo-html="Person.description"`|
-| `bo-href-i = "url"`      | **equivalent** to `ng-href`. **Heads up!** It creates one watcher. using {{}} inside the url like `<a bo-href="/profile{{Person.id}}">` you create one watcher, use `bo-href` to avoid it: `<a bo-href="'/profile' + Person.id">` |`<a bo-href-i="/profile{{Person.id}}"></a>`|
-| `bo-href = "url"`      | **similar** to `ng-href` but doesn't doesn't allow interpolation using {{}} like `ng-href`. **Heads up!** You can't use interpolation `{{}}` inside the url, use bo-href-i for that purpose |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
-| `bo-src-i = "url"`      | **equivalent** to `ng-src`. **Heads up!** It creates one watcher |`<img bo-src-i="{{picture}}" bo-alt="title">`|
-| `bo-src = "url"`      | **similar** to `ng-src` but doesn't doesn't allow interpolation using {{}} like `ng-src`. **Heads up!** You can't use interpolation `{{}}`, use bo-src-i for that purpose |`<img bo-src="picture" bo-alt="title">`|
+| `bo-href-i = "url"`      | **equivalent** to `ng-href`.
+**Heads up!** It creates one watcher. Using `{{}}` inside the url like `<a bo-href="/profile{{Person.id}}">` you create one watcher, use `bo-href` to avoid it: `<a bo-href="'/profile' + Person.id">` |`<a bo-href-i="/profile{{Person.id}}"></a>`|
+| `bo-href = "url"`      | **similar** to `ng-href` but doesn't allow interpolation using `{{}}` like `ng-href`.
+**Heads up!** You can't use interpolation `{{}}` inside the url, use bo-href-i for that purpose |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
+| `bo-src-i = "url"`      | **equivalent** to `ng-src`.
+**Heads up!** It creates one watcher |`<img bo-src-i="{{picture}}" bo-alt="title">`|
+| `bo-src = "url"`      | **similar** to `ng-src` but doesn't allow interpolation using `{{}}` like `ng-src`.
+**Heads up!** You can't use interpolation `{{}}`, use bo-src-i for that purpose |`<img bo-src="picture" bo-alt="title">`|
 | `bo-class = "class:condition"`      | equivalent to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
 | `bo-alt = "text"`      | evaluates "text" and render it as `alt` for the element |`<ANY bo-alt="title">`|
 | `bo-title = "text"`      | evaluates "text" and render it as `title` for the element |`<ANY bo-title="title">`|
