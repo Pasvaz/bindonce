@@ -74,21 +74,29 @@ You may have noticed that the first example didn't use any value with the attrib
 ```
 when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defined because `ng-repeat` creates the directives only when `person` exists, anyway you can use `<li bindonce="person" ng-repeat="person in Persons">` it doesn't make any difference.
 
+### Interpolation
+Some directives (ng-href, ng-src) use interpolation, ie: `ng-href="/profile/{{User.profileId}}"`. 
+Both `ng-href` and `ng-src` have the bo-* equivalent directives: `bo-href-i` and `bo-src-i` (pay attention to the **-i**, it means interpolate), as expected they don't use watchers however Angular creates one watcher for every interpolation, for instance `bo-href-i="/profile/{{User.profileId}}"` set the element's href **once**, as expected, but Angular keeps a watcher active on `{{User.profileId}}` even if `bo-href-i` doesn't use it.
+That's why by default the `bo-href` doesn't use interpolation nor watchers, the above equivalent with 0 watchers would be `bo-href="'/profile/' + User.profileId"`. Never the less `bo-href-i` and `bo-src-i` are still maintained for compatibility reasons.
+
 ## Attribute Usage
 | 	attribute | 	Description | 	Example  |
 | ------------- |:-------------:| -----:|
 | `bindonce="{somedata}"`| **bindonce** is the main directive, `{somedata}` is optional, if it's present it forces bindonce to wait until `somedata` is defined before to render its children  | `bindonce="Person"` |
-| `bo-show = "condition"`     | identical to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
-| `bo-hide = "condition"`     | identical to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
-| `bo-text = "text"`      | evaluates "somedata.text" and print it as text inside the element | `bo-text="Person.name"` |
-| `bo-html = "markup"`      | evaluates "somedata.markup" and render it as html inside the element |`bo-html="Person.description"`|
-| `bo-href = "url"`      | identical to `ng-href` but doesn't use watchers. Heads up! you can't use {{}} inside the url like `<a bo-href="/profile{{Person.id}}">` instead do `<a bo-href="'/profile' + Person.id">` |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
-| `bo-src = "url"`      | identical to `ng-src` but doesn't use watchers |`<img bo-src="{{picture}}" bo-alt="title">`|
-| `bo-class = "class:condition"`      | identical to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
+| `bo-if = "condition"`     | equivalent to `ng-if` but doesn't use watchers |`<ANY bo-if="Person.isPublic"></ANY>`|
+| `bo-show = "condition"`     | equivalent to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
+| `bo-hide = "condition"`     | equivalent to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
+| `bo-text = "text"`      | evaluates "text" and print it as text inside the element | `bo-text="Person.name"` |
+| `bo-html = "markup"`      | evaluates "markup" and render it as html inside the element |`bo-html="Person.description"`|
+| `bo-href-i = "url"`      | **equivalent** to `ng-href`. **Heads up!** It creates one watcher. using {{}} inside the url like `<a bo-href="/profile{{Person.id}}">` you create one watcher, use `bo-href` to avoid it: `<a bo-href="'/profile' + Person.id">` |`<a bo-href-i="/profile{{Person.id}}"></a>`|
+| `bo-href = "url"`      | **similar** to `ng-href` but doesn't doesn't allow interpolation using {{}} like `ng-href`. **Heads up!** You can't use interpolation `{{}}` inside the url, use bo-href-i for that purpose |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
+| `bo-src-i = "url"`      | **equivalent** to `ng-src`. **Heads up!** It creates one watcher |`<img bo-src-i="{{picture}}" bo-alt="title">`|
+| `bo-src = "url"`      | **similar** to `ng-src` but doesn't doesn't allow interpolation using {{}} like `ng-src`. **Heads up!** You can't use interpolation `{{}}`, use bo-src-i for that purpose |`<img bo-src="picture" bo-alt="title">`|
+| `bo-class = "class:condition"`      | equivalent to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
 | `bo-alt = "text"`      | evaluates "text" and render it as `alt` for the element |`<ANY bo-alt="title">`|
 | `bo-title = "text"`      | evaluates "text" and render it as `title` for the element |`<ANY bo-title="title">`|
 | `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<ANY bo-id="id">`|
-| `bo-style = "text"`      | identical to `ng-style` but doesn't use watchers |`<ANY bo-style="{color:red}">`|
+| `bo-style = "text"`      | equivalent to `ng-style` but doesn't use watchers |`<ANY bo-style="{color:red}">`|
 | `bo-value = "text"`      | evaluates "text" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
 
 ## Todo

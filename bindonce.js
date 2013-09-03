@@ -109,6 +109,21 @@
 						var value = $scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
 						switch(binder.attr)
 						{
+							case 'if':
+								if (toBoolean(value)) 
+								{
+									binder.transclude($scope.$new(), function (clone) 
+									{
+										var parent = binder.element.parent();
+										var afterNode = binder.element && binder.element[binder.element.length - 1];
+										var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+										var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
+										angular.forEach(clone, function(node) {
+											parentNode.insertBefore(node, afterNextSibling);
+										});
+									});
+								}
+								break;
 							case 'hide':
 							case 'show':
 								showHideBinder(binder.element, binder.attr, value);
@@ -127,7 +142,6 @@
 								break;
 							case 'src':
 								binder.element.attr(binder.attr, value);
-								// attr.$set(attrName, value);
 								if (msie) binder.element.prop('src', value);
 							case 'href':
 							case 'alt':
@@ -167,11 +181,14 @@
 angular.forEach(
 [
 	{directiveName:'boShow', attribute: 'show'},
+	{directiveName:'boIf', attribute: 'if', transclude: 'element', terminal: true, priority:1000},
 	{directiveName:'boHide', attribute:'hide'},
 	{directiveName:'boClass', attribute:'class'},
 	{directiveName:'boText', attribute:'text'},
 	{directiveName:'boHtml', attribute:'html'},
-	{directiveName:'boSrc', attribute:'src', interpolate:true},
+	{directiveName:'boSrcI', attribute:'src', interpolate:true},
+	{directiveName:'boSrc', attribute:'src'},
+	{directiveName:'boHrefI', attribute:'href', interpolate:true},
 	{directiveName:'boHref', attribute:'href'},
 	{directiveName:'boAlt', attribute:'alt'},
 	{directiveName:'boTitle', attribute:'title'},
@@ -186,41 +203,47 @@ function(boDirective)
 	{
 		var bindonceDirective =
 		{ 
-			priority: childPriority,
+			priority: boDirective.priority || childPriority,
+			transclude: boDirective.transclude || false, 
+			terminal: boDirective.terminal || false, 
 			require: '^bindonce', 
-			link: function(scope, elm, attrs, bindonceController)
+			compile: function (tElement, tAttrs, transclude) 
 			{
-				var name = attrs.boParent;
-				if (name && bindonceController.group != name)
+				return function(scope, elm, attrs, bindonceController)
 				{
-					var element = bindonceController.element.parent();
-					bindonceController = undefined;
-					var parentValue;
-
-					while (element[0].nodeType != 9 && element.length)
+					var name = attrs.boParent;
+					if (name && bindonceController.group != name)
 					{
-						if ((parentValue = element.data('$bindonceController')) 
-							&& parentValue.group == name)
+						var element = bindonceController.element.parent();
+						bindonceController = undefined;
+						var parentValue;
+
+						while (element[0].nodeType != 9 && element.length)
 						{
-							bindonceController = parentValue
-							break;
+							if ((parentValue = element.data('$bindonceController')) 
+								&& parentValue.group == name)
+							{
+								bindonceController = parentValue
+								break;
+							}
+							element = element.parent();
 						}
-						element = element.parent();
+						if (!bindonceController)
+						{
+							throw Error("No bindonce controller: " + name);
+						}
 					}
-					if (!bindonceController)
-					{
-						throw Error("No bindonce controller: " + name);
-					}
-				}
 
-				bindonceController.addBinder(
-				{
-					element		: 	elm, 
-					attr		: 	boDirective.attribute, 
-					value		: 	attrs[boDirective.directiveName], 
-					interpolate	: 	boDirective.interpolate, 
-					group		: 	name
-				});
+					bindonceController.addBinder(
+					{
+						element		: 	elm, 
+						attr		: 	boDirective.attribute, 
+						value		: 	attrs[boDirective.directiveName], 
+						interpolate	: 	boDirective.interpolate, 
+						group		: 	name,
+						transclude	: 	transclude
+					});
+				}
 			}
 		}
 
