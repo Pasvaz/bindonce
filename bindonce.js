@@ -9,109 +9,144 @@
 
  angular.module('pasvaz.bindonce', [])
 
- .directive('bindonce', function() {
- 	var toBoolean = function(value) {
- 		if (value && value.length !== 0) {
- 			var v = angular.lowercase("" + value);
- 			value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == 'n' || v == '[]');
- 		} else {
- 			value = false;
- 		}
- 		return value;
- 	}
+ .directive('bindonce', function() 
+ {
+	var toBoolean = function(value) 
+	{
+		if (value && value.length !== 0) 
+		{
+			var v = angular.lowercase("" + value);
+			value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == 'n' || v == '[]');
+		}
+		else 
+		{
+			value = false;
+		}
+		return value;
+	}
 
- 	return {
- 		restrict: "AM",
- 		controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
- 			var showHideBinder = function(elm, attr, value) 
- 			{
- 				var show = (attr == 'show') ? '' : 'none';
- 				var hide = (attr == 'hide') ? '' : 'none';
- 				elm.css('display', toBoolean(value) ? show : hide);
- 			}
- 			var classBinder = function(elm, value)
- 			{
- 				if (angular.isObject(value) && !angular.isArray(value)) {
- 					var results = [];
- 					angular.forEach(value, function(value, index) {
- 						if (value) results.push(index);
- 					});
- 					value = results;
- 				}
- 				if (value) {
- 					elm.addClass(angular.isArray(value) ? value.join(' ') : value);
- 				}
- 			}
+	var msie = parseInt((/msie (\d+)/.exec(angular.lowercase(navigator.userAgent)) || [])[1], 10);
+	if (isNaN(msie)) 
+	{
+		msie = parseInt((/trident\/.*; rv:(\d+)/.exec(angular.lowercase(navigator.userAgent)) || [])[1], 10);
+	}
 
- 			var ctrl =
- 			{
- 				watcherRemover : undefined,
- 				binders : [],
- 				group : $attrs.boName,
- 				element : $element,
- 				ran : false,
+	var bindonceDirective =
+	{
+		restrict: "AM",
+		controller: ['$scope', '$element', '$attrs', '$interpolate', function($scope, $element, $attrs, $interpolate) 
+		{
+			var showHideBinder = function(elm, attr, value) 
+			{
+				var show = (attr == 'show') ? '' : 'none';
+				var hide = (attr == 'hide') ? '' : 'none';
+				elm.css('display', toBoolean(value) ? show : hide);
+			}
+			var classBinder = function(elm, value)
+			{
+				if (angular.isObject(value) && !angular.isArray(value)) 
+				{
+					var results = [];
+					angular.forEach(value, function(value, index) 
+					{
+						if (value) results.push(index);
+					});
+					value = results;
+				}
+				if (value) 
+				{
+					elm.addClass(angular.isArray(value) ? value.join(' ') : value);
+				}
+			}
 
- 				addBinder : function(binder) 
- 				{
- 					this.binders.push(binder);
+			var ctrl =
+			{
+				watcherRemover : undefined,
+				binders : [],
+				group : $attrs.boName,
+				element : $element,
+				ran : false,
 
- 					// In case of late binding (when using the directive bo-name/bo-parent)
- 					// it happens only when you use nested bindonce, if the bo-children
- 					// are not dom children the linking can follow another order
- 					if (this.ran)
- 					{
- 						this.runBinders();
- 					}
- 				},
+				addBinder : function(binder) 
+				{
+					this.binders.push(binder);
 
- 				setupWatcher : function(bindonceValue) 
- 				{
- 					var that = this;
- 					this.watcherRemover = $scope.$watch(bindonceValue, function(newValue) 
- 					{
- 						if (newValue == undefined) return;
- 						that.removeWatcher();
- 						that.runBinders();
- 					}, true);
- 				},
+					// In case of late binding (when using the directive bo-name/bo-parent)
+					// it happens only when you use nested bindonce, if the bo-children
+					// are not dom children the linking can follow another order
+					if (this.ran)
+					{
+						this.runBinders();
+					}
+				},
 
- 				removeWatcher : function() 
- 				{
- 					if (this.watcherRemover != undefined)
- 					{
- 						this.watcherRemover();
- 						this.watcherRemover = undefined;
- 					}
- 				},
+				setupWatcher : function(bindonceValue) 
+				{
+					var that = this;
+					this.watcherRemover = $scope.$watch(bindonceValue, function(newValue) 
+					{
+						if (newValue == undefined) return;
+						that.removeWatcher();
+						that.runBinders();
+					}, true);
+				},
 
- 				runBinders : function()
- 				{
- 					for (var data in this.binders)
- 					{
- 						var binder = this.binders[data];
- 						if (this.group && this.group != binder.group ) continue;
- 						var value = $scope.$eval(binder.value);
+				removeWatcher : function() 
+				{
+					if (this.watcherRemover != undefined)
+					{
+						this.watcherRemover();
+						this.watcherRemover = undefined;
+					}
+				},
+
+				runBinders : function()
+				{
+					for (var data in this.binders)
+					{
+						var binder = this.binders[data];
+						if (this.group && this.group != binder.group ) continue;
+						var value = $scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
 						switch(binder.attr)
 						{
+							case 'if':
+								if (toBoolean(value)) 
+								{
+									binder.transclude($scope.$new(), function (clone) 
+									{
+										var parent = binder.element.parent();
+										var afterNode = binder.element && binder.element[binder.element.length - 1];
+										var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+										var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
+										angular.forEach(clone, function(node) {
+											parentNode.insertBefore(node, afterNextSibling);
+										});
+									});
+								}
+								break;
 							case 'hide':
 							case 'show':
-							showHideBinder(binder.element, binder.attr, value);
-							break;
+								showHideBinder(binder.element, binder.attr, value);
+								break;
 							case 'class':
-							classBinder(binder.element, value);
-							break;
+								classBinder(binder.element, value);
+								break;
 							case 'text':
-							binder.element.text(value);
-							break;
+								binder.element.text(value);
+								break;
 							case 'html':
-							binder.element.html(value);
-							break;
+								binder.element.html(value);
+								break;
+							case 'style':
+								binder.element.css(value);
+								break;
 							case 'src':
+								binder.element.attr(binder.attr, value);
+								if (msie) binder.element.prop('src', value);
 							case 'href':
 							case 'alt':
 							case 'title':
 							case 'id':
-							case 'style':
 							case 'value':
 							binder.element.attr(binder.attr, value);
 							case 'attr':
@@ -126,15 +161,16 @@
 							break;
 						}
 					}
- 					this.ran = true;
- 					this.binders = [];
+					this.ran = true;
+					this.binders = [];
 				}
 			}
 
 			return ctrl;
 		}],
 
-		link: function(scope, elm, attrs, bindonceController) {
+		link: function(scope, elm, attrs, bindonceController) 
+		{
 			var value = (attrs.bindonce) ? scope.$eval(attrs.bindonce) : true;
 			if (value != undefined)
 			{
@@ -147,8 +183,11 @@
 			}
 		}
 	};
+
+	return bindonceDirective;
 });
 
+<<<<<<< HEAD
 angular.forEach({
 	'boShow' : 'show',
 	'boHide' : 'hide',
@@ -165,40 +204,81 @@ angular.forEach({
 	'boAttr' : 'attr'
 },
 function(tag, attribute)
+=======
+angular.forEach(
+[
+	{directiveName:'boShow', attribute: 'show'},
+	{directiveName:'boIf', attribute: 'if', transclude: 'element', terminal: true, priority:1000},
+	{directiveName:'boHide', attribute:'hide'},
+	{directiveName:'boClass', attribute:'class'},
+	{directiveName:'boText', attribute:'text'},
+	{directiveName:'boHtml', attribute:'html'},
+	{directiveName:'boSrcI', attribute:'src', interpolate:true},
+	{directiveName:'boSrc', attribute:'src'},
+	{directiveName:'boHrefI', attribute:'href', interpolate:true},
+	{directiveName:'boHref', attribute:'href'},
+	{directiveName:'boAlt', attribute:'alt'},
+	{directiveName:'boTitle', attribute:'title'},
+	{directiveName:'boId', attribute:'id'},
+	{directiveName:'boStyle', attribute:'style'},
+	{directiveName:'boValue', attribute:'value'}
+],
+function(boDirective)
+>>>>>>> upstream/master
 {
 	var childPriority = 200;
-	return angular.module('pasvaz.bindonce').directive(attribute, function() 
+	return angular.module('pasvaz.bindonce').directive(boDirective.directiveName, function() 
 	{
-		return { 
-			priority: childPriority,
+		var bindonceDirective =
+		{ 
+			priority: boDirective.priority || childPriority,
+			transclude: boDirective.transclude || false, 
+			terminal: boDirective.terminal || false, 
 			require: '^bindonce', 
-			link: function(scope, elm, attrs, bindonceController)
+			compile: function (tElement, tAttrs, transclude) 
 			{
-				var name = attrs.boParent;
-				if (name && bindonceController.group != name)
+				return function(scope, elm, attrs, bindonceController)
 				{
-					var element = bindonceController.element.parent();
-					bindonceController = undefined;
-					var parentValue;
+					var name = attrs.boParent;
+					if (name && bindonceController.group != name)
+					{
+						var element = bindonceController.element.parent();
+						bindonceController = undefined;
+						var parentValue;
 
-					while (element[0].nodeType != 9 && element.length)
-					{
-						if ((parentValue = element.data('$bindonceController')) 
-							&& parentValue.group == name)
+						while (element[0].nodeType != 9 && element.length)
 						{
-							bindonceController = parentValue
-							break;
+							if ((parentValue = element.data('$bindonceController')) 
+								&& parentValue.group == name)
+							{
+								bindonceController = parentValue
+								break;
+							}
+							element = element.parent();
 						}
-						element = element.parent();
+						if (!bindonceController)
+						{
+							throw Error("No bindonce controller: " + name);
+						}
 					}
-					if (!bindonceController)
+
+					bindonceController.addBinder(
 					{
-						throw Error("No bindonce controller: " + name);
-					}
+						element		: 	elm, 
+						attr		: 	boDirective.attribute, 
+						value		: 	attrs[boDirective.directiveName], 
+						interpolate	: 	boDirective.interpolate, 
+						group		: 	name,
+						transclude	: 	transclude
+					});
 				}
+<<<<<<< HEAD
 				bindonceController.addBinder({element: elm, attr:tag, attrs:attrs, value: attrs[attribute], group: name});
+=======
+>>>>>>> upstream/master
 			}
 		}
+
+		return bindonceDirective;
 	});
 });
-
