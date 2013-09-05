@@ -148,8 +148,17 @@
 							case 'title':
 							case 'id':
 							case 'value':
-								binder.element.attr(binder.attr, value);
-								break;
+							binder.element.attr(binder.attr, value);
+							case 'attr':
+							angular.forEach(binder.attrs, function(attrValue, attrKey) {
+ 								var newAttr, newValue;
+ 								if (attrKey.match(/^boAttr/) && binder.attrs[attrKey]) {
+ 									newAttr = attrKey.replace(/^boAttr/, '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+ 									newValue = $scope.$eval(binder.attrs[attrKey]);
+ 									binder.element.attr(newAttr, newValue);
+ 								}
+ 							});
+							break;
 						}
 					}
 					this.ran = true;
@@ -178,6 +187,7 @@
 	return bindonceDirective;
 });
 
+
 angular.forEach(
 [
 	{directiveName:'boShow', attribute: 'show'},
@@ -194,7 +204,8 @@ angular.forEach(
 	{directiveName:'boTitle', attribute:'title'},
 	{directiveName:'boId', attribute:'id'},
 	{directiveName:'boStyle', attribute:'style'},
-	{directiveName:'boValue', attribute:'value'}
+	{directiveName:'boValue', attribute:'value'},
+	{directiveName:'boAttr', attribute:'attr'}
 ],
 function(boDirective)
 {
@@ -238,6 +249,7 @@ function(boDirective)
 					{
 						element		: 	elm, 
 						attr		: 	boDirective.attribute, 
+						attrs 		: 	attrs,
 						value		: 	attrs[boDirective.directiveName], 
 						interpolate	: 	boDirective.interpolate, 
 						group		: 	name,
