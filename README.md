@@ -98,6 +98,7 @@ That's why by default the `bo-href` doesn't use interpolation nor watchers, the 
 | `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<ANY bo-id="id">`|
 | `bo-style = "text"`      | equivalent to `ng-style` but doesn't use watchers |`<ANY bo-style="{color:red}">`|
 | `bo-value = "text"`      | evaluates "text" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
+| `bo-attr bo-attr-foo = "text"`      | evaluates "text" and render it as a custom attribute for the element |`<div bo-attr bo-attr-foo="bar"></div>`|
 
 ## Todo
 Examples and Tests
