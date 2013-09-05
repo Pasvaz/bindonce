@@ -272,10 +272,7 @@ function(boDirective)
 						transclude	: 	transclude
 					});
 				}
-<<<<<<< HEAD
 				bindonceController.addBinder({element: elm, attr:tag, attrs:attrs, value: attrs[attribute], group: name});
-=======
->>>>>>> upstream/master
 			}
 		}
 
