@@ -153,7 +153,7 @@
 							case 'attr':
 								angular.forEach(binder.attrs, function(attrValue, attrKey) {
 	 								var newAttr, newValue;
-	 								if (attrKey.match(/^boAttr/) && binder.attrs[attrKey]) {
+	 								if (attrKey.match(/^boAttr./) && binder.attrs[attrKey]) {
 	 									newAttr = attrKey.replace(/^boAttr/, '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 	 									newValue = $scope.$eval(binder.attrs[attrKey]);
 	 									binder.element.attr(newAttr, newValue);
