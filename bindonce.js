@@ -187,24 +187,7 @@
 	return bindonceDirective;
 });
 
-<<<<<<< HEAD
-angular.forEach({
-	'boShow' : 'show',
-	'boHide' : 'hide',
-	'boClass' : 'class',
-	'boText' : 'text',
-	'boHtml' : 'html',
-	'boSrc' : 'src',
-	'boHref' : 'href',
-	'boAlt' : 'alt',
-	'boTitle' : 'title',
-	'boId' : 'id',
-	'boStyle' : 'style',
-	'boValue' : 'value',
-	'boAttr' : 'attr'
-},
-function(tag, attribute)
-=======
+
 angular.forEach(
 [
 	{directiveName:'boShow', attribute: 'show'},
@@ -221,10 +204,10 @@ angular.forEach(
 	{directiveName:'boTitle', attribute:'title'},
 	{directiveName:'boId', attribute:'id'},
 	{directiveName:'boStyle', attribute:'style'},
-	{directiveName:'boValue', attribute:'value'}
+	{directiveName:'boValue', attribute:'value'},
+	{directiveName:'boAttr', attribute:'attr'}
 ],
 function(boDirective)
->>>>>>> upstream/master
 {
 	var childPriority = 200;
 	return angular.module('pasvaz.bindonce').directive(boDirective.directiveName, function() 
@@ -266,13 +249,13 @@ function(boDirective)
 					{
 						element		: 	elm, 
 						attr		: 	boDirective.attribute, 
+						attrs 		: 	attrs,
 						value		: 	attrs[boDirective.directiveName], 
 						interpolate	: 	boDirective.interpolate, 
 						group		: 	name,
 						transclude	: 	transclude
 					});
 				}
-				bindonceController.addBinder({element: elm, attr:tag, attrs:attrs, value: attrs[attribute], group: name});
 			}
 		}
 
