@@ -106,19 +106,20 @@
 					{
 						var binder = this.binders[data];
 						if (this.group && this.group != binder.group ) continue;
-						var value = $scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
+						var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
 						switch(binder.attr)
 						{
 							case 'if':
 								if (toBoolean(value)) 
 								{
-									binder.transclude($scope.$new(), function (clone) 
+									binder.transclude(binder.scope.$new(), function (clone) 
 									{
 										var parent = binder.element.parent();
 										var afterNode = binder.element && binder.element[binder.element.length - 1];
 										var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
 										var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
-										angular.forEach(clone, function(node) {
+										angular.forEach(clone, function(node) 
+										{
 											parentNode.insertBefore(node, afterNextSibling);
 										});
 									});
@@ -143,6 +144,18 @@
 							case 'src':
 								binder.element.attr(binder.attr, value);
 								if (msie) binder.element.prop('src', value);
+							case 'attr':
+								angular.forEach(binder.attrs, function(attrValue, attrKey) 
+								{
+									var newAttr, newValue;
+									if (attrKey.match(/^boAttr./) && binder.attrs[attrKey]) 
+									{
+										newAttr = attrKey.replace(/^boAttr/, '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+										newValue = binder.scope.$eval(binder.attrs[attrKey]);
+										binder.element.attr(newAttr, newValue);
+									}
+								});
+								break;
 							case 'href':
 							case 'alt':
 							case 'title':
@@ -150,16 +163,6 @@
 							case 'value':
 								binder.element.attr(binder.attr, value);
 								break;
-							case 'attr':
-								angular.forEach(binder.attrs, function(attrValue, attrKey) {
-	 								var newAttr, newValue;
-	 								if (attrKey.match(/^boAttr./) && binder.attrs[attrKey]) {
-	 									newAttr = attrKey.replace(/^boAttr/, '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-	 									newValue = $scope.$eval(binder.attrs[attrKey]);
-	 									binder.element.attr(newAttr, newValue);
-	 								}
-	 							});
-	 							break;
 						}
 					}
 					this.ran = true;
@@ -253,7 +256,8 @@ function(boDirective)
 						value		: 	attrs[boDirective.directiveName],
 						interpolate	: 	boDirective.interpolate,
 						group		: 	name,
-						transclude	: 	transclude
+						transclude	: 	transclude,
+						scope		: 	scope
 					});
 				}
 			}
