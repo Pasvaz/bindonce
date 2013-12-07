@@ -86,6 +86,7 @@ That's why by default the `bo-href` doesn't use interpolation or watchers. The a
 | `bo-if = "condition"`     | equivalent to `ng-if` but doesn't use watchers |`<ANY bo-if="Person.isPublic"></ANY>`|
 | `bo-show = "condition"`     | equivalent to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
 | `bo-hide = "condition"`     | equivalent to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
+| `bo-disabled = "condition"` | identical to `ng-disabled` but doesn't use watchers |`<input bo-disabled="prop.isDisabled">`|
 | `bo-text = "text"`      | evaluates "text" and print it as text inside the element | `bo-text="Person.name"` |
 | `bo-html = "markup"`      | evaluates "markup" and render it as html inside the element |`bo-html="Person.description"`|
 | `bo-href-i = "url"`      | **equivalent** to `ng-href`. **Heads up!** It creates one watcher. Using `{{}}` inside the url like `<a bo-href="/profile{{Person.id}}">`. Use `bo-href` to avoid creating a watcher: `<a bo-href="'/profile' + Person.id">` |`<a bo-href-i="/profile{{Person.id}}"></a>`|
