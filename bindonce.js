@@ -160,6 +160,7 @@
 							case 'href':
 							case 'alt':
 							case 'title':
+							case 'for':
 							case 'id':
 							case 'value':
 								binder.element.attr(binder.attr, value);
@@ -206,6 +207,7 @@ angular.forEach(
 	{directiveName:'boHref', attribute:'href'},
 	{directiveName:'boAlt', attribute:'alt'},
 	{directiveName:'boTitle', attribute:'title'},
+	{directiveName:'boFor', attribute:'for'},
 	{directiveName:'boId', attribute:'id'},
 	{directiveName:'boStyle', attribute:'style'},
 	{directiveName:'boValue', attribute:'value'},
