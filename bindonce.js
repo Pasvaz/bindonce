@@ -8,9 +8,9 @@
 	 * @license MIT License, http://www.opensource.org/licenses/MIT
 	 */
 
-	angular.module('pasvaz.bindonce', [])
+	var bindonceModule = angular.module('pasvaz.bindonce', []);
 
-	.directive('bindonce', function ()
+	bindonceModule.directive('bindonce', function ()
 	{
 		var toBoolean = function (value)
 		{
@@ -110,7 +110,7 @@
 							var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
 							switch (binder.attr)
 							{
-								case 'if':
+								case 'boIf':
 									if (toBoolean(value))
 									{
 										binder.transclude(binder.scope.$new(), function (clone)
@@ -125,6 +125,38 @@
 											});
 										});
 									}
+									break;
+								case 'boSwitch':
+									var selectedTranscludes, switchCtrl = binder.controller[0];
+									if ((selectedTranscludes = switchCtrl.cases['!' + value] || switchCtrl.cases['?']))
+									{
+										binder.scope.$eval(binder.attrs.change);
+										angular.forEach(selectedTranscludes, function (selectedTransclude)
+										{
+											selectedTransclude.transclude(binder.scope.$new(), function (clone)
+											{
+												var parent = selectedTransclude.element.parent();
+												var afterNode = selectedTransclude.element && selectedTransclude.element[selectedTransclude.element.length - 1];
+												var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+												var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
+												angular.forEach(clone, function (node)
+												{
+													parentNode.insertBefore(node, afterNextSibling);
+												});
+
+											});
+										});
+									}
+									break;
+								case 'boSwitchWhen':
+									var ctrl = binder.controller[0];
+									ctrl.cases['!' + binder.attrs.boSwitchWhen] = (ctrl.cases['!' + binder.attrs.boSwitchWhen] || []);
+									ctrl.cases['!' + binder.attrs.boSwitchWhen].push({ transclude: binder.transclude, element: binder.element });
+									break;
+								case 'boSwitchDefault':
+									var ctrl = binder.controller[0];
+									ctrl.cases['?'] = (ctrl.cases['?'] || []);
+									ctrl.cases['?'].push({ transclude: binder.transclude, element: binder.element });
 									break;
 								case 'hide':
 								case 'show':
@@ -195,7 +227,6 @@
 	angular.forEach(
 	[
 		{ directiveName: 'boShow', attribute: 'show' },
-		{ directiveName: 'boIf', attribute: 'if', transclude: 'element', terminal: true, priority: 1000 },
 		{ directiveName: 'boHide', attribute: 'hide' },
 		{ directiveName: 'boClass', attribute: 'class' },
 		{ directiveName: 'boText', attribute: 'text' },
@@ -209,23 +240,30 @@
 		{ directiveName: 'boId', attribute: 'id' },
 		{ directiveName: 'boStyle', attribute: 'style' },
 		{ directiveName: 'boValue', attribute: 'value' },
-		{ directiveName: 'boAttr', attribute: 'attr' }
+		{ directiveName: 'boAttr', attribute: 'attr' },
+
+		{ directiveName: 'boIf', transclude: 'element', terminal: true, priority: 1000 },
+		{ directiveName: 'boSwitch', require: 'boSwitch', controller: function () { this.cases = {}; } },
+		{ directiveName: 'boSwitchWhen', transclude: 'element', priority: 800, require: '^boSwitch', },
+		{ directiveName: 'boSwitchDefault', transclude: 'element', priority: 800, require: '^boSwitch', },
 	],
 	function (boDirective)
 	{
 		var childPriority = 200;
-		return angular.module('pasvaz.bindonce').directive(boDirective.directiveName, function ()
+		return bindonceModule.directive(boDirective.directiveName, function ()
 		{
 			var bindonceDirective =
 			{
 				priority: boDirective.priority || childPriority,
 				transclude: boDirective.transclude || false,
 				terminal: boDirective.terminal || false,
-				require: '^bindonce',
+				require: ['^bindonce'].concat(boDirective.require || []),
+				controller: boDirective.controller,
 				compile: function (tElement, tAttrs, transclude)
 				{
-					return function (scope, elm, attrs, bindonceController)
+					return function (scope, elm, attrs, controllers)
 					{
+						var bindonceController = controllers[0];
 						var name = attrs.boParent;
 						if (name && bindonceController.group !== name)
 						{
@@ -252,12 +290,13 @@
 						bindonceController.addBinder(
 						{
 							element: elm,
-							attr: boDirective.attribute,
+							attr: boDirective.attribute || boDirective.directiveName,
 							attrs: attrs,
 							value: attrs[boDirective.directiveName],
 							interpolate: boDirective.interpolate,
 							group: name,
 							transclude: transclude,
+							controller: controllers.slice(1),
 							scope: scope
 						});
 					};
@@ -266,5 +305,5 @@
 
 			return bindonceDirective;
 		});
-	});
+	})
 })();
