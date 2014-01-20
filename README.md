@@ -36,7 +36,7 @@ The above example done with **bindonce**:
 Now this example uses **0 watches** per `person` and renders exactly the same result as the above that uses ng-*. *(Angular still uses 1 watcher for ngRepeatWatch)*
 
 ### The smart approach
-OK until here nothing completely new, with a bit of efforts you could create your own directive and render the `person` inside the `link` function, or you could use [watch fighters](https://github.com/abourget/abourget-angular) that has a similar approach, but there is still one problem that you have to face and **bindonce** already handles it: *the existence of the data when the directive renders the content*. Usually the directives, unless you use watchers or bind their attributes to the scope (still a watcher), render the content when they are loaded into the markup, but if at that given time your data is not available, the directive can't render it. Bindonce can wait until the data is ready before to rendering the content. 
+OK until here nothing completely new, with a bit of efforts you could create your own directive and render the `person` inside the `link` function, or you could use [watch fighters](https://github.com/abourget/abourget-angular) that has a similar approach, but there is still one problem that you have to face and **bindonce** already handles it: *the existence of the data when the directive renders the content*. Usually the directives, unless you use watchers or bind their attributes to the scope (still a watcher), render the content when they are loaded into the markup, but if at that given time your data is not available, the directive can't render it. Bindonce can wait until the data is ready before to rendering the content.
 Let's take a look at the follow snippet to better understand the concept:
 ```html
 <span my-custom-set-text="Person.firstname"></span>
@@ -75,7 +75,7 @@ You may have noticed that the first example didn't assign any value to the `bind
 when used with `ng-repeat` `bindonce` doesn't need to check if `person` is defined because `ng-repeat` creates the directives only when `person` exists. You could be more explicit: `<li bindonce="person" ng-repeat="person in Persons">`, however assigning a value to `bindonce` in an `ng-repeat` won't make any difference.
 
 ### Interpolation
-Some directives (ng-href, ng-src) use interpolation, ie: `ng-href="/profile/{{User.profileId}}"`. 
+Some directives (ng-href, ng-src) use interpolation, ie: `ng-href="/profile/{{User.profileId}}"`.
 Both `ng-href` and `ng-src` have the bo-* equivalent directives: `bo-href-i` and `bo-src-i` (pay attention to the **-i**, it stands for **interpolate**). As expected they don't use watchers however Angular creates one watcher per  interpolation, for instance `bo-href-i="/profile/{{User.profileId}}"` sets the element's href **once**, as expected, but Angular keeps a watcher active on `{{User.profileId}}` even if `bo-href-i` doesn't use it.
 That's why by default the `bo-href` doesn't use interpolation or watchers. The above equivalent with 0 watchers would be `bo-href="'/profile/' + User.profileId"`. Nevertheless, `bo-href-i` and `bo-src-i` are still maintained for compatibility reasons.
 
@@ -99,6 +99,12 @@ That's why by default the `bo-href` doesn't use interpolation or watchers. The a
 | `bo-style = "text"`      | equivalent to `ng-style` but doesn't use watchers |`<ANY bo-style="{color:red}">`|
 | `bo-value = "text"`      | evaluates "text" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
 | `bo-attr bo-attr-foo = "text"`      | evaluates "text" and render it as a custom attribute for the element |`<div bo-attr bo-attr-foo="bar"></div>`|
+
+## Build
+```
+$ npm install uglify-js -g
+$ uglifyjs bindonce.js > bindonce.min.js
+```
 
 ## Todo
 Examples and Tests
