@@ -1,6 +1,6 @@
 {
   "name": "angular-bindonce",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "main": "bindonce.js",
   "description": "Zero watchers binding directives for AngularJS",
   "homepage": "https://github.com/Pasvaz/bindonce",
