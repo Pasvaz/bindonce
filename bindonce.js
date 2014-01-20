@@ -2,7 +2,7 @@
 	"use strict";
 	/**
 	 * Bindonce - Zero watches binding for AngularJs
-	 * @version v0.2.2 - 2013-05-07
+	 * @version v0.2.3 - 2013-05-07
 	 * @link https://github.com/Pasvaz/bindonce
 	 * @author Pasquale Vazzana <pasqualevazzana@gmail.com>
 	 * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -101,13 +101,14 @@
 						}
 					},
 
-					runBinders : function()
+					runBinders: function ()
 					{
-						while(this.binders.length > 0) {
+						while (this.binders.length > 0)
+						{
 							var binder = this.binders.shift();
-							if (this.group && this.group != binder.group ) continue;
+							if (this.group && this.group != binder.group) continue;
 							var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
-							switch(binder.attr)
+							switch (binder.attr)
 							{
 								case 'if':
 									if (toBoolean(value))
@@ -167,7 +168,6 @@
 							}
 						}
 						this.ran = true;
-						this.binders = [];
 					}
 				};
 
