@@ -120,6 +120,11 @@ $ uglifyjs bindonce.js > bindonce.min.js
 ## Todo
 Examples and Tests
 
+## Copyright
+BindOnce was written by **Pasquale Vazzana**, you can follow him on [google+](https://plus.google.com/101872882413388363602) or on [@twitter](https://twitter.com/PasqualeVazzana)
+
+Thanks to all the [contributors](https://github.com/Pasvaz/bindonce/graphs/contributors)
+
 ## LICENSE - "MIT License"
 
 Copyright (c) 2013-2014 Pasquale Vazzana
