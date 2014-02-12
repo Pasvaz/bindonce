@@ -114,7 +114,7 @@ Consequentially you can use any valid angular expression, including filters. Thi
 ## Build
 ```
 $ npm install uglify-js -g
-$ uglifyjs bindonce.js > bindonce.min.js
+$ uglifyjs bindonce.js -c -m -o bindonce.min.js
 ```
 
 ## Todo
