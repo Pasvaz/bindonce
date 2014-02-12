@@ -211,7 +211,19 @@
 				var value = (attrs.bindonce) ? scope.$eval(attrs.bindonce) : true;
 				if (value !== undefined)
 				{
-					bindonceController.runBinders();
+					// since Angular 1.2 promises are no longer 
+					// undefined until they don't get resolved
+					if (value.then && typeof value.then === 'function')
+					{
+						value.then(function ()
+						{
+							bindonceController.runBinders();
+						});
+					}
+					else
+					{
+						bindonceController.runBinders();
+					}
 				}
 				else
 				{
