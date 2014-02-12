@@ -79,25 +79,36 @@ Some directives (ng-href, ng-src) use interpolation, ie: `ng-href="/profile/{{Us
 Both `ng-href` and `ng-src` have the bo-* equivalent directives: `bo-href-i` and `bo-src-i` (pay attention to the **-i**, it stands for **interpolate**). As expected they don't use watchers however Angular creates one watcher per  interpolation, for instance `bo-href-i="/profile/{{User.profileId}}"` sets the element's href **once**, as expected, but Angular keeps a watcher active on `{{User.profileId}}` even if `bo-href-i` doesn't use it.
 That's why by default the `bo-href` doesn't use interpolation or watchers. The above equivalent with 0 watchers would be `bo-href="'/profile/' + User.profileId"`. Nevertheless, `bo-href-i` and `bo-src-i` are still maintained for compatibility reasons.
 
+### Filters
+Almost every `bo-*` directive replace the equivalent `ng-*` and works in the same ways, except it is evaluated once. 
+Consequentially you can use any valid angular expression, including filters. This is an example how to use a filter:
+```html
+<div bindonce="Person">
+	<span bo-bind="Person.bill | currency:'USD$'"></span>
+</div>
+```
+
 ## Attribute Usage
-| 	attribute | 	Description | 	Example  |
-| ------------- |:-------------:| -----:|
-| `bindonce="{somedata}"`| **bindonce** is the main directive. `{somedata}` is optional, and if present, forces bindonce to wait until `somedata` is defined before rendering its children  | `bindonce="Person"` |
+| Directive  | 	Description | 	Example  |
+|------------|----------------|-----|
+| `bindonce="{somedata}"`| **bindonce** is the main directive. `{somedata}` is optional, and if present, forces bindonce to wait until `somedata` is defined before rendering its children  | `<div bindonce="Person">...<div>` |
 | `bo-if = "condition"`     | equivalent to `ng-if` but doesn't use watchers |`<ANY bo-if="Person.isPublic"></ANY>`|
+| `bo-switch = "expression"`     | equivalent to `ng-switch` but doesn't use watchers |`<div bo-switch="Person.isPublic">` `<span bo-switch-when="'yes">public</span>` `<span bo-switch-default>private</span>` `</div>`|
 | `bo-show = "condition"`     | equivalent to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
 | `bo-hide = "condition"`     | equivalent to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
-| `bo-text = "text"`      | evaluates "text" and print it as text inside the element | `bo-text="Person.name"` |
+| `bo-text = "text"`      | evaluates "text" and print it as text inside the element | `<span bo-text="Person.name"></span>` |
+| `bo-bind = "text"`      | alias for `bo-text`, equivalent to `ng-bind` but doesn't use watchers | `<span bo-bind="Person.name"></span>` |
 | `bo-html = "markup"`      | evaluates "markup" and render it as html inside the element |`bo-html="Person.description"`|
-| `bo-href-i = "url"`      | **equivalent** to `ng-href`. **Heads up!** It creates one watcher. Using `{{}}` inside the url like `<a bo-href="/profile{{Person.id}}">`. Use `bo-href` to avoid creating a watcher: `<a bo-href="'/profile' + Person.id">` |`<a bo-href-i="/profile{{Person.id}}"></a>`|
-| `bo-href = "url"`      | **similar** to `ng-href` but doesn't allow interpolation using `{{}}` like `ng-href`. **Heads up!** You can't use interpolation `{{}}` inside the url, use bo-href-i for that purpose |`<a bo-href="'/profile' + Person.id"></a>` or `<a bo-href="link" bo-text="Link"></a>`|
-| `bo-src-i = "url"`      | **equivalent** to `ng-src`. **Heads up!** It creates one watcher |`<img bo-src-i="{{picture}}" bo-alt="title">`|
-| `bo-src = "url"`      | **similar** to `ng-src` but doesn't allow interpolation using `{{}}` like `ng-src`. **Heads up!** You can't use interpolation `{{}}`, use bo-src-i for that purpose |`<img bo-src="picture" bo-alt="title">`|
-| `bo-class = "class:condition"`      | equivalent to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
+| `bo-href-i = "url"`<br>*use `bo-href` instead* | **equivalent** to `ng-href`.<br>**Heads up!** Using interpolation `{{}}` it creates one watcher: <br>`bo-href-i="/p/{{Person.id}}"`. <br>Use `bo-href` to avoid the watcher:<br> `bo-href="'/p/' + Person.id"` |`<a bo-href-i="/profile{{Person.id}}"></a>`|
+| `bo-href = "url"`      | **similar** to `ng-href` but doesn't allow interpolation using `{{}}` like `ng-href`. <br>**Heads up!** You can't use interpolation `{{}}` inside the url, use bo-href-i for that purpose |`<a bo-href="'/profile' + Person.id"></a>` <br />or<br /> `<a bo-href="link" bo-text="Link"></a>`|
+| `bo-src-i = "url"`<br>*use `bo-src` instead* | **equivalent** to `ng-src`. <br>**Heads up!** It creates one watcher |`<img bo-src-i="{{picture}}" bo-alt="title">`|
+| `bo-src = "url"`      | **similar** to `ng-src` but doesn't allow interpolation using `{{}}` like `ng-src`. <br>**Heads up!** You can't use interpolation `{{}}`, use bo-src-i for that purpose |`<img bo-src="picture" bo-alt="title">`|
+| `bo-class = "object/string"`      | equivalent to `ng-class` but doesn't use watchers |`<span bo-class="{'fancy':Person.condition}">`|
 | `bo-alt = "text"`      | evaluates "text" and render it as `alt` for the element |`<ANY bo-alt="title">`|
 | `bo-title = "text"`      | evaluates "text" and render it as `title` for the element |`<ANY bo-title="title">`|
-| `bo-id = "text"`      | evaluates "text" and render it as `id` for the element |`<ANY bo-id="id">`|
-| `bo-style = "text"`      | equivalent to `ng-style` but doesn't use watchers |`<ANY bo-style="{'color':Object.color}">`|
-| `bo-value = "text"`      | evaluates "text" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
+| `bo-id = "#id"`      | evaluates "#id" and render it as `id` for the element |`<ANY bo-id="id">`|
+| `bo-style = "object"`      | equivalent to `ng-style` but doesn't use watchers |`<ANY bo-style="{'color':Person.color}">`|
+| `bo-value = "expression"`      | evaluates "expression" and render it as `value` for the element |`<input type="radio" bo-value="value">`|
 | `bo-attr bo-attr-foo = "text"`      | evaluates "text" and render it as a custom attribute for the element |`<div bo-attr bo-attr-foo="bar"></div>`|
 
 ## Build
@@ -109,5 +120,24 @@ $ uglifyjs bindonce.js > bindonce.min.js
 ## Todo
 Examples and Tests
 
-## License
-MIT
+## LICENSE - "MIT License"
+
+Copyright (c) 2013-2014 Pasquale Vazzana
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
