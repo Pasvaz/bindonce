@@ -1,8 +1,18 @@
+# 0.3.1 (2014-02-12)
+## Features
+- **bo-bind:**
+  - alias for bo-text
+
+## Minor improvements
+- Updated Readme
+
+<hr />
 # 0.3.0 (2014-01-21)
 ## Features
 - **bo-switch:**
   - Create new directive: bo-switch ([652d0db](https://github.com/Pasvaz/bindonce/commit/652d0db04325166a180377c738a376543b5f2357))
 
+<hr />
 # 0.2.3 (2014-01-20)
 ## Bug Fixes
 
