@@ -59,6 +59,20 @@
 						elm.addClass(angular.isArray(value) ? value.join(' ') : value);
 					}
 				};
+				var transclude = function (transcluder, scope)
+				{
+					transcluder.transclude(scope, function (clone)
+					{
+						var parent = transcluder.element.parent();
+						var afterNode = transcluder.element && transcluder.element[transcluder.element.length - 1];
+						var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
+						var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
+						angular.forEach(clone, function (node)
+						{
+							parentNode.insertBefore(node, afterNextSibling);
+						});
+					});
+				};
 
 				var ctrl =
 				{
@@ -113,17 +127,7 @@
 								case 'boIf':
 									if (toBoolean(value))
 									{
-										binder.transclude(binder.scope.$new(), function (clone)
-										{
-											var parent = binder.element.parent();
-											var afterNode = binder.element && binder.element[binder.element.length - 1];
-											var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
-											var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
-											angular.forEach(clone, function (node)
-											{
-												parentNode.insertBefore(node, afterNextSibling);
-											});
-										});
+										transclude(binder, binder.scope.$new());
 									}
 									break;
 								case 'boSwitch':
@@ -133,18 +137,7 @@
 										binder.scope.$eval(binder.attrs.change);
 										angular.forEach(selectedTranscludes, function (selectedTransclude)
 										{
-											selectedTransclude.transclude(binder.scope.$new(), function (clone)
-											{
-												var parent = selectedTransclude.element.parent();
-												var afterNode = selectedTransclude.element && selectedTransclude.element[selectedTransclude.element.length - 1];
-												var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
-												var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
-												angular.forEach(clone, function (node)
-												{
-													parentNode.insertBefore(node, afterNextSibling);
-												});
-
-											});
+											transclude(selectedTransclude, binder.scope.$new());
 										});
 									}
 									break;
