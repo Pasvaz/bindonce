@@ -1,4 +1,5 @@
-(function () {
+(function ()
+{
 	"use strict";
 	/**
 	 * Bindonce - Zero watches binding for AngularJs
@@ -26,6 +27,17 @@
 			return value;
 		};
 
+		var indexOf = function (array, obj)
+		{
+			if (array.indexOf) return array.indexOf(obj);
+
+			for (var i = 0; i < array.length; i++)
+			{
+				if (obj === array[i]) return i;
+			}
+			return -1;
+		}
+
 		var msie = parseInt((/msie (\d+)/.exec(angular.lowercase(navigator.userAgent)) || [])[1], 10);
 		if (isNaN(msie))
 		{
@@ -43,6 +55,7 @@
 					var hide = (attr === 'hide') ? '' : 'none';
 					elm.css('display', toBoolean(value) ? show : hide);
 				};
+
 				var classBinder = function (elm, value)
 				{
 					if (angular.isObject(value) && !angular.isArray(value))
@@ -59,6 +72,7 @@
 						elm.addClass(angular.isArray(value) ? value.join(' ') : value);
 					}
 				};
+
 				var transclude = function (transcluder, scope)
 				{
 					transcluder.transclude(scope, function (clone)
@@ -74,25 +88,39 @@
 					});
 				};
 
+
 				var ctrl =
 				{
 					watcherRemover: undefined,
-					binders: [],
+					queue: [],
+					refreshQueue: [],
 					group: $attrs.boName,
 					element: $element,
-					ran: false,
+					refreshing: false,
+					isReady: false,
+					oneWatcher: false,
+					keepBinders: false,
+
+					ready: function ()
+					{
+						console.log('Ready to go', this.queue);
+						this.isReady = true;
+						this.runBinders();
+						if (this.refreshOn)
+						{
+							$scope.$on(this.refreshOn, this.refresher)
+						}
+					},
 
 					addBinder: function (binder)
 					{
-						this.binders.push(binder);
+						if (this.group && this.group != binder.group) return;
 
-						// In case of late binding (when using the directive bo-name/bo-parent)
-						// it happens only when you use nested bindonce, if the bo-children
-						// are not dom children the linking can follow another order
-						if (this.ran)
-						{
-							this.runBinders();
-						}
+						console.log('Adding', binder, ' to ', this.queue);
+						this.queue.push(binder);
+						if (!this.isReady || this.queue.length > 1) return;
+
+						this.runBinders();
 					},
 
 					setupWatcher: function (bindonceValue)
@@ -101,8 +129,18 @@
 						this.watcherRemover = $scope.$watch(bindonceValue, function (newValue)
 						{
 							if (newValue === undefined) return;
-							that.removeWatcher();
-							that.checkBindonce(newValue);
+							console.log('Ran from Watcher');
+
+							!that.oneWatcher && that.removeWatcher();
+
+							if (!that.isReady)
+							{
+								that.checkBindonce(newValue);
+							}
+							else
+							{
+								that.refresher();
+							}
 						}, true);
 					},
 
@@ -115,12 +153,12 @@
 						{
 							promise(function ()
 							{
-								that.runBinders();
+								that.ready();
 							});
 						}
 						else
 						{
-							that.runBinders();
+							that.ready();
 						}
 					},
 
@@ -135,82 +173,125 @@
 
 					runBinders: function ()
 					{
-						while (this.binders.length > 0)
+						while (this.queue.length > 0)
 						{
-							var binder = this.binders.shift();
-							if (this.group && this.group != binder.group) continue;
-							var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
-							switch (binder.attr)
+							var binder = this.queue.shift();
+							if (!binder.dead)
+								this.runBinder(binder);
+
+							if (this.keepBinders)
 							{
-								case 'boIf':
-									if (toBoolean(value))
-									{
-										transclude(binder, binder.scope.$new());
-									}
-									break;
-								case 'boSwitch':
-									var selectedTranscludes, switchCtrl = binder.controller[0];
-									if ((selectedTranscludes = switchCtrl.cases['!' + value] || switchCtrl.cases['?']))
-									{
-										binder.scope.$eval(binder.attrs.change);
-										angular.forEach(selectedTranscludes, function (selectedTransclude)
-										{
-											transclude(selectedTransclude, binder.scope.$new());
-										});
-									}
-									break;
-								case 'boSwitchWhen':
-									var ctrl = binder.controller[0];
-									ctrl.cases['!' + binder.attrs.boSwitchWhen] = (ctrl.cases['!' + binder.attrs.boSwitchWhen] || []);
-									ctrl.cases['!' + binder.attrs.boSwitchWhen].push({ transclude: binder.transclude, element: binder.element });
-									break;
-								case 'boSwitchDefault':
-									var ctrl = binder.controller[0];
-									ctrl.cases['?'] = (ctrl.cases['?'] || []);
-									ctrl.cases['?'].push({ transclude: binder.transclude, element: binder.element });
-									break;
-								case 'hide':
-								case 'show':
-									showHideBinder(binder.element, binder.attr, value);
-									break;
-								case 'class':
-									classBinder(binder.element, value);
-									break;
-								case 'text':
-									binder.element.text(value);
-									break;
-								case 'html':
-									binder.element.html(value);
-									break;
-								case 'style':
-									binder.element.css(value);
-									break;
-								case 'src':
-									binder.element.attr(binder.attr, value);
-									if (msie) binder.element.prop('src', value);
-									break;
-								case 'attr':
-									angular.forEach(binder.attrs, function (attrValue, attrKey)
-									{
-										var newAttr, newValue;
-										if (attrKey.match(/^boAttr./) && binder.attrs[attrKey])
-										{
-											newAttr = attrKey.replace(/^boAttr/, '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-											newValue = binder.scope.$eval(binder.attrs[attrKey]);
-											binder.element.attr(newAttr, newValue);
-										}
-									});
-									break;
-								case 'href':
-								case 'alt':
-								case 'title':
-								case 'id':
-								case 'value':
-									binder.element.attr(binder.attr, value);
-									break;
+								this.refreshQueue.push(binder);
+								binder.stopRefresh = function ()
+								{
+									console.log('Destroy stopRefresh', binder);
+									ctrl.refreshQueue[indexOf(ctrl.refreshQueue, binder)] = null;
+								}
 							}
+							console.log('after adding', binder, this.keepBinders, this.refreshQueue);
+						};
+					},
+
+					runBinder: function (binder)
+					{
+						console.log('Binder is', binder);
+						var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
+						switch (binder.attr)
+						{
+							case 'boIf':
+								if (toBoolean(value))
+								{
+									transclude(binder, (binder.attrs.boNoScope) ? binder.scope : binder.scope.$new());
+								}
+								break;
+							case 'boSwitch':
+								var selectedTranscludes, switchCtrl = binder.controller[0];
+								if ((selectedTranscludes = switchCtrl.cases['!' + value] || switchCtrl.cases['?']))
+								{
+									binder.scope.$eval(binder.attrs.change);
+									var scope = (binder.attrs.boNoScope) ? binder.scope : binder.scope.$new();
+									angular.forEach(selectedTranscludes, function (selectedTransclude)
+									{
+										transclude(selectedTransclude, scope);
+									});
+								}
+								break;
+							case 'boSwitchWhen':
+								var ctrl = binder.controller[0];
+								ctrl.cases['!' + binder.attrs.boSwitchWhen] = (ctrl.cases['!' + binder.attrs.boSwitchWhen] || []);
+								ctrl.cases['!' + binder.attrs.boSwitchWhen].push({ transclude: binder.transclude, element: binder.element });
+								break;
+							case 'boSwitchDefault':
+								var ctrl = binder.controller[0];
+								ctrl.cases['?'] = (ctrl.cases['?'] || []);
+								ctrl.cases['?'].push({ transclude: binder.transclude, element: binder.element });
+								break;
+							case 'hide':
+							case 'show':
+								showHideBinder(binder.element, binder.attr, value);
+								break;
+							case 'class':
+								classBinder(binder.element, value);
+								break;
+							case 'text':
+								binder.element.text(value);
+								break;
+							case 'html':
+								binder.element.html(value);
+								break;
+							case 'style':
+								binder.element.css(value);
+								break;
+							case 'src':
+								binder.element.attr(binder.attr, value);
+								if (msie) binder.element.prop('src', value);
+								break;
+							case 'attr':
+								angular.forEach(binder.attrs, function (attrValue, attrKey)
+								{
+									var newAttr, newValue;
+									if (attrKey.match(/^boAttr./) && binder.attrs[attrKey])
+									{
+										newAttr = attrKey.replace(/^boAttr/, '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+										newValue = binder.scope.$eval(binder.attrs[attrKey]);
+										binder.element.attr(newAttr, newValue);
+									}
+								});
+								break;
+							case 'href':
+							case 'alt':
+							case 'title':
+							case 'id':
+							case 'value':
+								binder.element.attr(binder.attr, value);
+								break;
+						};
+
+						// TODO: avoid runBinder if the value doesn't change
+						binder.lastValue = value;
+					},
+
+					// temporary code, I know it sucks... don't blame me
+					refresher: function ()
+					{
+						console.log('Refresh requested $on', ctrl);
+						if (ctrl.refreshing)
+						{
+							console.log('Refresh already in progress');
+							return;
 						}
-						this.ran = true;
+
+						// <drunk>
+						ctrl.refreshing = true;
+						var i, max = ctrl.refreshQueue.length;
+						for (i = 0; i < max; i++)
+						{
+							var binder = ctrl.refreshQueue[i];
+							if (!binder.dead) // it should never happens
+								ctrl.runBinder(binder);
+						};
+						ctrl.refreshing = false;
+						// </drunk>
 					}
 				};
 
@@ -220,6 +301,10 @@
 			link: function (scope, elm, attrs, bindonceController)
 			{
 				var value = attrs.bindonce && scope.$eval(attrs.bindonce);
+				bindonceController.oneWatcher = attrs.hasOwnProperty('oneWatcher');
+				bindonceController.refreshOn = attrs.refreshOn && scope.$eval(attrs.refreshOn);
+				bindonceController.keepBinders = bindonceController.oneWatcher || bindonceController.refreshOn;
+
 				if (value !== undefined)
 				{
 					bindonceController.checkBindonce(value);
@@ -276,22 +361,24 @@
 					return function (scope, elm, attrs, controllers)
 					{
 						var bindonceController = controllers[0];
+
+						// TODO: document this feature: bo-parent
 						var name = attrs.boParent;
 						if (name && bindonceController.group !== name)
 						{
-							var element = bindonceController.element.parent();
+							var elementParent = bindonceController.element.parent();
 							bindonceController = undefined;
-							var parentValue;
+							var parentController;
 
-							while (element[0].nodeType !== 9 && element.length)
+							while (elementParent[0].nodeType !== 9 && elementParent.length)
 							{
-								if ((parentValue = element.data('$bindonceController'))
-									&& parentValue.group === name)
+								if ((parentController = elementParent.data('$bindonceController'))
+									&& parentController.group === name)
 								{
-									bindonceController = parentValue;
+									bindonceController = parentController;
 									break;
 								}
-								element = element.parent();
+								elementParent = elementParent.parent();
 							}
 							if (!bindonceController)
 							{
@@ -299,8 +386,7 @@
 							}
 						}
 
-						bindonceController.addBinder(
-						{
+						var binder = {
 							element: elm,
 							attr: boDirective.attribute || boDirective.directiveName,
 							attrs: attrs,
@@ -310,8 +396,25 @@
 							transclude: transclude,
 							controller: controllers.slice(1),
 							scope: scope
-						});
-					};
+						};
+
+						// TODO: improve the the garbage collection
+						// this whole part must be rewritten
+						var binderDestroy = function ()
+						{
+							console.log('Destroying', binder);
+							if (binder != null)
+							{
+								binder.dead = true;
+								binder.stopRefresh && binder.stopRefresh();
+								binder = null;
+							}
+						}
+
+						bindonceController.addBinder(binder);
+						//scope.$on('$destroy', binderDestroy);
+						elm.bind('$destroy', binderDestroy);
+					}
 				}
 			};
 
