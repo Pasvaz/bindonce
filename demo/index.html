@@ -12,10 +12,10 @@
 	Items <span ng-bind="items"></span>
 	<button ng-click="AddItem()">Add Item</button>
 	<button ng-click="Change()">Change array</button>
-	<span bindonce="items" refresh-on="'rinfresca'">
+	<div bindonce="items" refresh-on="'rinfresca'">
 		<div ng-repeat="item in items">
 			<span bo-if="true" bo-no-scope="">
-				<span bo-text="item">item number</span>
+				<span bo-bind="item">item number</span>
 			</span>
 			<span bo-switch="item">
 				<span bo-switch-when="1">(FIRST)</span>
@@ -23,11 +23,27 @@
 				<span bo-switch-default="">(MIDDLE)</span>
 			</span>
 			<span bo-if="item == items.length">
-				LAST ELEMENT <span bo-text="items.length">item number</span>
+				LAST ELEMENT <span bo-bind="items.length">item number</span>
 			</span>
 		</div>
 		<br />
-	</span>
+	</div>
+
+	<!--
+	<div ng-repeat="item in items">
+		<span ng-if="true" bo-no-scope="">
+			<span ng-bind="item">item number</span>
+		</span>
+		<span ng-switch="item">
+			<span ng-switch-when="1">(FIRST)</span>
+			<span ng-switch-when="4">(Fourth)</span>
+			<span ng-switch-default="">(MIDDLE)</span>
+		</span>
+		<span ng-if="item == items.length">
+			LAST ELEMENT <span ng-bind="items.length">item number</span>
+		</span>
+	</div>
+	<br />
 
 	<!--
 	<h1>Testing Rebind Fixed</h1>

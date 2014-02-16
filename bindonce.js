@@ -83,7 +83,7 @@
 						var afterNode = binder.element && binder.element[binder.element.length - 1];
 						var parentNode = parent && parent[0] || afterNode && afterNode.parentNode;
 						var afterNextSibling = (afterNode && afterNode.nextSibling) || null;
-						console.log('running Transclude', clone, binder, parent, parentNode);
+						// console.log('running Transclude', clone, binder, parent, parentNode);
 						angular.forEach(clone, function (node)
 						{
 							parentNode.insertBefore(node, afterNextSibling);
@@ -107,7 +107,7 @@
 
 					ready: function ()
 					{
-						console.log('Ready to go', ctrl.queue);
+						// console.log('Ready to go', ctrl.queue);
 						ctrl.isReady = true;
 						ctrl.runBinders();
 						ctrl.refreshOn && $scope.$on(ctrl.refreshOn, ctrl.refresher);
@@ -117,7 +117,7 @@
 					{
 						if (this.group && this.group != binder.group) return;
 
-						console.log('Adding', binder, ' to ', this.queue);
+						// console.log('Adding', binder, ' to ', this.queue);
 						this.queue.push(binder);
 						if (!this.isReady || this.queue.length > 1) return;
 
@@ -129,7 +129,7 @@
 						this.watcherRemover = $scope.$watch(bindonceValue, function (newValue)
 						{
 							if (newValue === undefined) return;
-							console.log('Ran from Watcher');
+							// console.log('Ran from Watcher');
 
 							!ctrl.oneWatcher && ctrl.removeWatcher();
 
@@ -191,18 +191,18 @@
 									this.refreshQueue.push(binder);
 									binder.stopRefresh = function ()
 									{
-										console.log('Destroy stopRefresh', binder);
+										// console.log('Destroy stopRefresh', binder);
 										ctrl.refreshQueue[indexOf(ctrl.refreshQueue, binder)] = null;
 									}
 								}
 							}
-							console.log('after adding', binder, this.keepBinders, this.refreshQueue);
+							// console.log('after adding', binder, this.keepBinders, this.refreshQueue);
 						};
 					},
 
 					runBinder: function (binder, value)
 					{
-						console.log('Binder is', binder, value, binder.value);
+						// console.log('Binder is', binder, value, binder.value);
 						switch (binder.attr)
 						{
 							case 'boIf':
@@ -219,7 +219,7 @@
 								//	{
 								//		if (selectedTransclude.scope)
 								//		{
-								//			console.log('deleting selectedTransclude', selectedTransclude);
+								//			// console.log('deleting selectedTransclude', selectedTransclude);
 								//			if (!binder.attrs.boNoScope) selectedTransclude.scope.$destroy();
 								//			//selectedTransclude.element.remove();
 								//			angular.forEach(selectedTransclude.nodes, function (node)
@@ -243,7 +243,7 @@
 										if (selectedBinder.element)
 										{
 											transclude(selectedBinder, !binder.attrs.boNoScope, ctrl.keepBinders);
-											console.log('created selectedBinder', selectedBinder);
+											// console.log('created selectedBinder', selectedBinder);
 										}
 									});
 								}
@@ -253,7 +253,7 @@
 								switchCtrl.cases['!' + binder.attrs.boSwitchWhen] = (switchCtrl.cases['!' + binder.attrs.boSwitchWhen] || []);
 								//if (indexOf(switchCtrl.cases['!' + binder.attrs.boSwitchWhen], binder) < 0)
 								switchCtrl.cases['!' + binder.attrs.boSwitchWhen].push(binder);
-								console.debug('Added case ' + binder.attrs.boSwitchWhen, switchCtrl.cases)
+								// console.debug('Added case ' + binder.attrs.boSwitchWhen, switchCtrl.cases)
 								//switchCtrl.cases['!' + binder.attrs.boSwitchWhen].push({ transclude: binder.transclude, element: binder.element });
 								break;
 							case 'boSwitchDefault':
@@ -261,7 +261,7 @@
 								switchCtrl.cases['?'] = (switchCtrl.cases['?'] || []);
 								//if (indexOf(switchCtrl.cases['?'], binder) < 0)
 								switchCtrl.cases['?'].push(binder);
-								console.debug('Added case default', switchCtrl.cases)
+								// console.debug('Added case default', switchCtrl.cases)
 								//switchCtrl.cases['?'].push({ transclude: binder.transclude, element: binder.element });
 								break;
 							case 'hide':
@@ -317,7 +317,7 @@
 								var switchCase = cases[i];
 								if (switchCase === binder)
 								{
-									console.debug('Removing Switch case ' + switchCase.lastValue, switchCase, 'from', cases);
+									// console.debug('Removing Switch case ' + switchCase.lastValue, switchCase, 'from', cases);
 									cases.splice(i);
 									cleanNodes(switchCase);
 									break;
@@ -330,13 +330,13 @@
 							delete binder.newScope;
 							angular.forEach(binder.nodes, function (node)
 							{
-								console.debug('Deleting node', node, 'from', binder.nodes, binder.element);
+								// console.debug('Deleting node', node, 'from', binder.nodes, binder.element);
 								node.remove();
 							});
 							delete binder.nodes;
 						};
 
-						console.log('Destroying Binder', binder, value, binder.value);
+						// console.log('Destroying Binder', binder, value, binder.value);
 						switch (binder.attr)
 						{
 							case 'boIf':
@@ -348,7 +348,7 @@
 								{
 									//angular.forEach(binder.selectedBinders, function (selectedTransclude)
 									//{
-									//	console.log('deleting selectedTransclude', selectedTransclude);
+									//	// console.log('deleting selectedTransclude', selectedTransclude);
 									//});
 									delete binder.selectedBinders;
 								}
@@ -369,10 +369,10 @@
 					// temporary code, I know it sucks... don't blame me
 					refresher: function ()
 					{
-						console.log('Refresh requested $on', ctrl);
+						// console.log('Refresh requested $on', ctrl);
 						if (ctrl.refreshing)
 						{
-							console.log('Refresh already in progress');
+							// console.log('Refresh already in progress');
 							return;
 						}
 
@@ -381,7 +381,7 @@
 						var i, max = ctrl.refreshQueue.length;
 						for (i = 0; i < max; i++)
 						{
-							console.log('Going to refresh', binder, ctrl.refreshQueue);
+							// console.log('Going to refresh', binder, ctrl.refreshQueue);
 							var binder = ctrl.refreshQueue[i];
 							if (binder && !binder.dead) // it should never happens
 							{
@@ -504,7 +504,7 @@
 						// this whole part must be rewritten
 						var binderDestroy = function ()
 						{
-							console.warn('Destroying', binder);
+							// console.warn('Destroying', binder);
 							if (binder != null)
 							{
 								binder.dead = true;
