@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html ng-app="bindoncedebug">
+<head>
+	<script src="../../angular.pasvaz/build/angular.js"></script>
+	<script src="../../angular.pasvaz/build/angular-resource.js"></script>
+	<script src="../bindonce.js"></script>
+	<script src="script.js"></script>
+</head>
+
+<body ng-controller="MainCtrl">
+	<h1>Testing Rebind Inside Repeat</h1>
+	Items <span ng-bind="items"></span>
+	<button ng-click="AddItem()">Add Item</button>
+	<button ng-click="Change()">Change array</button>
+	<span bindonce="items" refresh-on="'rinfresca'">
+		<div ng-repeat="item in items">
+			<span bo-if="true" bo-no-scope="">
+				<span bo-text="item">item number</span>
+			</span>
+			<span bo-switch="item">
+				<span bo-switch-when="1">(FIRST)</span>
+				<span bo-switch-when="4">(Fourth)</span>
+				<span bo-switch-default="">(MIDDLE)</span>
+			</span>
+			<span bo-if="item == items.length">
+				LAST ELEMENT <span bo-text="items.length">item number</span>
+			</span>
+		</div>
+		<br />
+	</span>
+
+	<!--
+	<h1>Testing Rebind Fixed</h1>
+	<span bindonce="items" one-watcher-no refresh-on="'rinfresca'">
+
+		<span bo-switch="items[0]" bo-no-scope1="">
+			<span bo-switch-when="1">
+				(FIRST)
+				<span bo-text="items[0]">item number</span>
+			</span>
+			<span bo-switch-default="">
+				(MIDDLE)
+				<span bo-text="items[0]">item number</span>
+			</span>
+		</span><br>
+
+		<span bo-switch="items[1]">
+			<span bo-switch-when="1">
+				(FIRST)
+				<span bo-text="items[1]">item number</span>
+			</span>
+			<span bo-switch-default="">
+				(MIDDLE)
+				<span bo-text="items[1]">item number</span>
+			</span>
+		</span><br>
+	</span>
+		-->
+</body>
+</html>
