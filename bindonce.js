@@ -158,10 +158,13 @@
 						// console.log('Ready to go', ctrl.queue);
 						ctrl.isReady = true;
 						ctrl.runBinders();
-						ctrl.refreshOn && $scope.$on(ctrl.refreshOn, ctrl.refresher);
 
-                        //proposed alternative to $scope.$on (maybe both could work?)
-                        ctrl.notifyRegistration = eventBus.on(ctrl.refreshOn, ctrl.refresher);
+                        if (ctrl.refreshOn) {
+                            $scope.$on(ctrl.refreshOn, ctrl.refresher);
+
+                            //proposed alternative to $scope.$on (maybe both could work?)
+                            ctrl.notifyRegistration = eventBus.on(ctrl.refreshOn, ctrl.refresher);
+                        }
 					},
 
 					addBinder: function (binder)
