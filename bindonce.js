@@ -11,7 +11,55 @@
 
 	var bindonceModule = angular.module('pasvaz.bindonce', []);
 
-	bindonceModule.directive('bindonce', function ()
+    bindonceModule.factory('pasvaz.rebindNotify', ['rel.eventBus', function(eventBus) {
+        return eventBus('pasvas.rebindNotify');
+    }]);
+
+    bindonceModule.factory('rel.eventBus', function() {
+        var eventBuses = {};
+
+        return function(busName) {
+            if (!eventBuses[busName]) {
+                eventBuses[busName] = createBus();
+            }
+
+            return eventBuses[busName];
+        };
+
+        function createBus() {
+            var eventHandlers = {};
+
+            return {
+                on: function(eventName, handler) {
+                    if (!eventHandlers[eventName]) {
+                        eventHandlers[eventName] = [];
+                    }
+
+                    var handlers = eventHandlers[eventName];
+                    handlers.push(handler);
+
+                    return {
+                        cancel: function() {
+                            var index = handlers.indexOf(handler);
+                            if (index >= 0) {
+                                handlers.splice(index, 1);
+                            } else {
+                                throw new Error('Cannot cancel handler... maybe you already canceled it?');
+                            }
+                        }
+                    };
+                },
+
+                fire: function(eventName, data) {
+                    angular.forEach(eventHandlers[eventName], function(handler) {
+                        handler(data);
+                    });
+                }
+            }
+        }
+    });
+
+	bindonceModule.directive('bindonce', ['pasvaz.rebindNotify', function (eventBus)
 	{
 		var toBoolean = function (value)
 		{
@@ -111,6 +159,9 @@
 						ctrl.isReady = true;
 						ctrl.runBinders();
 						ctrl.refreshOn && $scope.$on(ctrl.refreshOn, ctrl.refresher);
+
+                        //proposed alternative to $scope.$on (maybe both could work?)
+                        ctrl.notifyRegistration = eventBus.on(ctrl.refreshOn, ctrl.refresher);
 					},
 
 					addBinder: function (binder)
@@ -419,7 +470,7 @@
 		};
 
 		return bindonceDirective;
-	});
+	}]);
 
 	angular.forEach(
 	[
@@ -513,6 +564,10 @@
 								delete binder.nodes;
 								binder = null;
 							}
+
+                            if (ctrl.notifyRegistration) {
+                                ctrl.notifyRegistration.cancel();
+                            }
 						}
 
 						bindonceController.addBinder(binder);

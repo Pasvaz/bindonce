@@ -7,8 +7,8 @@
         var demo = angular.module('boSrcWithRefreshDemo', ['pasvaz.bindonce']);
 
         demo.controller('MainController',
-                ['$scope', '$interval',
-                    function ($scope, $interval) {
+                ['$scope', 'pasvaz.rebindNotify',
+                    function ($scope, rebindNotify) {
                         $scope.test = "Hello, world!";
 
                         var images = [
@@ -22,7 +22,7 @@
                         $scope.advanceImage = function () {
                             currentImageNumber = (currentImageNumber + 1) % images.length;
                             $scope.image = images[currentImageNumber];
-                            $scope.$emit('refreshImage'); //must emit this arbitrary event so bindonce directives rebind
+                            rebindNotify.fire('image1id');
                         }
                     }]);
     </script>
@@ -32,12 +32,12 @@
     Change Image
 </button>
 <div style="width: 200px; height: 200px; border: 3px solid gold">
-    <img bindonce refresh-on="'refreshImage'" bo-src="image" style="width: 100%; max-height: 100%"/>
+    <img bindonce refresh-on="'image1id'" bo-src="image" style="width: 100%; max-height: 100%"/>
 </div>
 
 
 <div style="width: 200px; height: 200px; border: 3px solid gold"
-     bindonce refresh-on="'refreshImage'" bo-style="{'background-image': 'url(\''+ image + '\')'}"
+     bindonce refresh-on="'image1id'" bo-style="{'background-image': 'url(\''+ image + '\')'}"
         >
     This one has a background-image
 </div>
