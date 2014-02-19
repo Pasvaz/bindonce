@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+    <script src="../bindonce.js"></script>
+    <script>
+        var demo = angular.module('boSrcWithRefreshDemo', ['pasvaz.bindonce']);
+
+        demo.controller('MainController',
+                ['$scope', '$interval',
+                    function ($scope, $interval) {
+                        $scope.test = "Hello, world!";
+
+                        $interval(function () {
+                            $scope.$broadcast('refreshTestText');
+                        }, 1000);
+                    }]);
+
+        demo.directive('dragAndDrop', function () {
+            return {
+                scope: {
+                    dragAndDrop: '&'
+                },
+                link: function (scope, element, attrs) {
+                    console.log("LINKING!");
+                    jQuery.event.props.push("dataTransfer");
+                    var processDragOverOrEnter = function (event) {
+                        event.preventDefault();
+                        event.dataTransfer.effectAllowed = 'copy';
+
+                        return false;
+                    };
+                    element.bind('dragover', processDragOverOrEnter);
+                    element.bind('dragenter', processDragOverOrEnter);
+
+                    var processDrop = function (event) {
+                        event.preventDefault();
+                        if (attrs.disabled) return;
+                        var reader = new FileReader();
+                        reader.onload = function (evt) {
+                            scope.$apply(function () {
+                                if (scope.dragAndDrop) {
+                                    console.log("NEW IMAGE: " + evt.target.result);
+                                    scope.dragAndDrop({newImage: evt.target.result});
+                                }
+                            });
+                        };
+
+                        var file = event.dataTransfer.files[0];
+                        reader.readAsDataURL(file);
+                    }
+                    element.bind('drop', processDrop);
+
+                }
+            };
+        });
+    </script>
+</head>
+<body ng-app="boSrcWithRefreshDemo" ng-controller="MainController">
+<p>
+    Drag an image file on to the square.
+</p>
+<div style="width: 200px; height: 200px; border: 3px solid gold"
+     drag-and-drop="image = newImage; $emit('refreshImage')">
+    <img bindonce refresh-on="'refreshImage'" bo-src="image" style="width: 100%; max-height: 100%"/>
+</div>
+
+
+<div style="width: 200px; height: 200px; border: 3px solid gold"
+     drag-and-drop="image = newImage; $emit('refreshImage')"
+     bindonce refresh-on="'refreshImage'" bo-style="{'background-image': 'url(\''+ image + '\')'}"
+        >
+    This one has a background-image 
+</div>
+<p>
+    The src attribute of the img is set to the dynamic $scope.image, but no $watch is created.  Instead,
+    the element is re-created when a 'refreshImage' event is fired.
+</p>
+<p>
+    We get the performance boost of the dropped $watch, with the cost that we must manually $emit a specific
+    event whenever our image changes (and listen for it with refresh-on).
+</p>
+</body>
+</html>
