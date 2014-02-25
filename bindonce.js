@@ -256,8 +256,8 @@
 
 		{ directiveName: 'boIf', transclude: 'element', terminal: true, priority: 1000 },
 		{ directiveName: 'boSwitch', require: 'boSwitch', controller: function () { this.cases = {}; } },
-		{ directiveName: 'boSwitchWhen', transclude: 'element', priority: 800, require: '^boSwitch', },
-		{ directiveName: 'boSwitchDefault', transclude: 'element', priority: 800, require: '^boSwitch', }
+		{ directiveName: 'boSwitchWhen', transclude: 'element', priority: 800, require: '^boSwitch' },
+		{ directiveName: 'boSwitchDefault', transclude: 'element', priority: 800, require: '^boSwitch' }
 	],
 	function (boDirective)
 	{
