@@ -170,10 +170,10 @@
 
 					destroy: function ()
 					{
-						this.queue = [];
-						this.refreshQueue = [];
-						this.element = undefined;
-						this.removeWatcher();
+						ctrl.queue = [];
+						ctrl.refreshQueue = [];
+						ctrl.element = undefined;
+						ctrl.removeWatcher();
 					},
 
 					runBinders: function ()
