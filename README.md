@@ -9,7 +9,7 @@ High performance binding for AngularJs
 * Add `'pasvaz.bindonce'` as a module dependency to your app: `angular.module('app', ['pasvaz.bindonce'])`
 
 ## Demo
-Here is an example of how AngularJs can [freeze your UI](http://plnkr.co/edit/jwrHVb?p=preview), try to press and hold a key inside the input field, when the table is filled with only 1 person everything is ok, you can see how the DOM is updated by the input in real time, however if you try to load 1000 person *(or even 500 if the testing device is not powerfull)* and repeat the experiment you can see how the UI is frozen. In [this other demo](http://plnkr.co/edit/0DGOrk?p=preview) BindOnce will take care of your watchers and the UI will be reactive as it should be. The code is the same for both demos, the only difference is that I replace any `ng-*` tag inside the table with the equivalent `bo-*` tag.
+Here is an example of how AngularJs can [freeze your UI](http://plnkr.co/edit/jwrHVb?p=preview), try to press and hold a key inside the input field, when the table is filled with only 1 person everything is ok, you can see how the DOM is updated by the input in real time, however if you try to load 1000 person *(or even 500 if the testing device is not powerfull)* and repeat the experiment you can see how the UI is frozen. In [this other demo](http://plnkr.co/edit/0DGOrk?p=preview) BindOnce will take care of your watchers and the UI will be reactive as it should be. The code is the same for both demos, the only difference is that I replaced any `ng-*` tag inside the table with the equivalent `bo-*` tag.
 * [AngularJs regular Demo](http://plnkr.co/edit/jwrHVb?p=preview)
 * [Demo with Bindonce](http://plnkr.co/edit/0DGOrk?p=preview)
 
