@@ -8,6 +8,11 @@ High performance binding for AngularJs
 * Include the `bindonce.js` script provided by this component into your app.
 * Add `'pasvaz.bindonce'` as a module dependency to your app: `angular.module('app', ['pasvaz.bindonce'])`
 
+## Demo
+Here is an example of how AngularJs can [freeze your UI](http://plnkr.co/edit/jwrHVb?p=preview), try to press and hold a key inside the input field, when the table is filled with only 1 person everything is ok, you can see how the DOM is updated by the input in real time, however if you try to load 1000 person *(or even 500 if the testing device is not powerfull)* and repeat the experiment you can see how the UI is frozen. In [this other demo](http://plnkr.co/edit/0DGOrk?p=preview) BindOnce will take care of your watchers and the UI will be reactive as it should be. The code is the same for both demos, the only difference is that I replace any `ng-*` tag inside the table with the equivalent `bo-*` tag.
+* [AngularJs regular Demo](http://plnkr.co/edit/jwrHVb?p=preview)
+* [Demo with Bindonce](http://plnkr.co/edit/0DGOrk?p=preview)
+
 ## Overview
 AngularJs provides a great data binding system but if you abuse of it the page can run into some performance issues, it's known that more of 2000 watchers can lag the UI and that amount can be reached easily if you don't pay attention to the data-binding. Sometime you really need to bind your data using watchers, especially for SPA because the data are updated in real time, but often you can avoid it with some efforts, most of the data presented in your page, once rendered, are immutable so you shouldn't keep watching them for changes.
 
@@ -118,7 +123,7 @@ $ uglifyjs bindonce.js -c -m -o bindonce.min.js
 ```
 
 ## Todo
-Examples and Tests
+Tests
 
 ## Copyright
 BindOnce was written by **Pasquale Vazzana**, you can follow him on [google+](https://plus.google.com/101872882413388363602) or on [@twitter](https://twitter.com/PasqualeVazzana)
