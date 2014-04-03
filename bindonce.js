@@ -35,7 +35,7 @@
 		var bindonceDirective =
 		{
 			restrict: "AM",
-			controller: ['$scope', '$element', '$attrs', '$interpolate', function ($scope, $element, $attrs, $interpolate)
+			controller: ['$scope', '$element', '$attrs', '$interpolate', '$sce', function ($scope, $element, $attrs, $interpolate, $sce)
 			{
 				var showHideBinder = function (elm, attr, value)
 				{
@@ -180,7 +180,7 @@
 									binder.element.text(value);
 									break;
 								case 'html':
-									binder.element.html(value);
+                                    binder.element.html($sce.getTrustedHtml(value));
 									break;
 								case 'style':
 									binder.element.css(value);
