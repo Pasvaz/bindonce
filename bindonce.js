@@ -35,8 +35,9 @@
 		var bindonceDirective =
 		{
 			restrict: "AM",
-			controller: ['$scope', '$element', '$attrs', '$interpolate', '$sce', function ($scope, $element, $attrs, $interpolate, $sce)
+			controller: ['$scope', '$element', '$attrs', '$interpolate', '$injector', '$sce', function ($scope, $element, $attrs, $interpolate, $injector, $sce)
 			{
+                var sanitize = $injector.has('$sanitize');
 				var showHideBinder = function (elm, attr, value)
 				{
 					var show = (attr === 'show') ? '' : 'none';
@@ -180,7 +181,7 @@
 									binder.element.text(value);
 									break;
 								case 'html':
-                                    binder.element.html($sce.getTrustedHtml(value));
+                                    binder.element.html(sanitize ? $sce.getTrustedHtml(value) : value);
 									break;
 								case 'style':
 									binder.element.css(value);
