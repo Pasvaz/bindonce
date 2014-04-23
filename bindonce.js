@@ -403,7 +403,7 @@
 			{
 				var value = attrs.bindonce && scope.$eval(attrs.bindonce);
 				bindonceController.oneWatcher = attrs.hasOwnProperty('oneWatcher');
-				bindonceController.refreshOn = attrs.refreshOn && scope.$eval(attrs.refreshOn);
+				bindonceController.refreshOn = attrs.refreshOn;
 				bindonceController.keepBinders = bindonceController.oneWatcher || bindonceController.refreshOn;
 
 				if (value !== undefined)
