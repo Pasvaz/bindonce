@@ -321,11 +321,49 @@
 
 	bindonceModule.directive('bindTurn', function ()
 	{
+		var mainScope = null;
+		var watchVar = null;
+		var scopesList = {};
+
+		var sw = function(newVal, oldVal) {
+			if (newVal == oldVal)
+				return;
+			newVal ? bind() : unbind();
+		};
+
+		var unbind = function() {
+			for(var i in scopesList) {
+				var item = scopesList[i];
+				scopesList[i].listeners = item.scope.$$listeners;
+				scopesList[i].watchers = item.scope.$$watchers;
+				scopesList[i].asyncQueue = item.scope.$$asyncQueue;
+				scopesList[i].postDigestQueue = item.scope.$$postDigestQueue;
+				item.scope.$$listeners = {};
+				item.scope.$$watchers = item.scope.$$asyncQueue = item.scope.$$postDigestQueue = [];
+			}
+			mainScope.$watch(watchVar, sw);
+		};
+
+		var bind = function() {
+			for(var i in scopesList) {
+				var item = scopesList[i];
+				item.scope.$$listeners = item.listeners;
+				item.scope.$$watchers = item.watchers;
+				item.scope.$$asyncQueue = item.asyncQueue;
+				item.scope.$$postDigestQueue = item.postDigestQueue;
+			}
+		};
+
 		var findChild = function(scope) {
 			if (typeof scope.$stopUnbind != 'undefined')
 				return;
-			scope.$$listeners = {};
-			scope.$$watchers = scope.$$asyncQueue = scope.$$postDigestQueue = [];
+			scopesList[scope.$id] = {
+				listeners: scope.$$listeners,
+				watchers: scope.$$watchers,
+				asyncQueue: scope.$$asyncQueue,
+				postDigestQueue: scope.$$postDigestQueue,
+				scope: scope
+			};
 			for(var cs = scope.$$childHead; cs; cs = cs.$$nextSibling) {
 				findChild(cs);
 			}
@@ -335,8 +373,13 @@
 			restrict: "AM",
 			scope: true,
 			link: function( $scope, $element, $attrs ) {
+				mainScope = $scope;
+				watchVar = $attrs.bindTurn;
+				mainScope.$watch(watchVar, sw);
 				setTimeout(function() {
 					findChild($scope);
+					if (mainScope[watchVar] == false)
+						unbind();
 				}, 0);
 			}
 		}
