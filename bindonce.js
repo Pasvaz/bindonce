@@ -317,5 +317,38 @@
 
 			return bindonceDirective;
 		});
-	})
+	});
+
+	bindonceModule.directive('bindTurn', function ()
+	{
+		var findChild = function(scope) {
+			if (typeof scope.$stopUnbind != 'undefined')
+				return;
+			scope.$$listeners = {};
+			scope.$$watchers = scope.$$asyncQueue = scope.$$postDigestQueue = [];
+			for(var cs = scope.$$childHead; cs; cs = cs.$$nextSibling) {
+				findChild(cs);
+			}
+		}
+
+		return {
+			restrict: "AM",
+			scope: true,
+			link: function( $scope, $element, $attrs ) {
+				setTimeout(function() {
+					findChild($scope);
+				}, 0);
+			}
+		}
+	});
+	bindonceModule.directive('bindPerm', function ()
+	{
+		return {
+			scope: true,
+			link: function( $scope, $element ) {
+				$scope.$stopUnbind = true;
+			}
+		}
+	});
+
 })();
