@@ -17,6 +17,14 @@
   ],
   "dependencies": {
   },
+   "devDependencies": {
+    "phantomjs" : "~1.9",
+    "karma": "~0.12",
+    "karma-chai": "~0.1",
+    "karma-mocha": "~0.1",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "mocha": "~1.20"
+  },
   "keywords": [
     "angularjs",
     "angular",
