@@ -185,6 +185,9 @@
 								case 'style':
 									binder.element.css(value);
 									break;
+								case 'disabled':
+									binder.element.prop('disabled', value);
+									break;
 								case 'src':
 									binder.element.attr(binder.attr, value);
 									if (msie) binder.element.prop('src', value);
@@ -251,6 +254,7 @@
 		{ directiveName: 'boTitle', attribute: 'title' },
 		{ directiveName: 'boId', attribute: 'id' },
 		{ directiveName: 'boStyle', attribute: 'style' },
+		{ directiveName: 'boDisabled', attribute: 'disabled' },
 		{ directiveName: 'boValue', attribute: 'value' },
 		{ directiveName: 'boAttr', attribute: 'attr' },
 
