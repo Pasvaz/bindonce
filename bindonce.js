@@ -190,7 +190,7 @@
 							var binder = this.queue.shift();
 							if (!binder.dead)
 							{
-								var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
+								var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value) || '';
 								this.runBinder(binder, value);
 
 								if (this.keepBinders)
