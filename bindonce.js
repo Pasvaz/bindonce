@@ -58,18 +58,25 @@
 
 				var classBinder = function (elm, value)
 				{
+					var valueRemoved;
 					if (angular.isObject(value) && !angular.isArray(value))
 					{
 						var results = [];
+						var resultsRemoved = [];
 						angular.forEach(value, function (value, index)
 						{
-							if (value) results.push(index);
+							if (value) results.push(index); else resultsRemoved.push(index);
 						});
 						value = results;
+						valueRemoved = resultsRemoved;
 					}
 					if (value)
 					{
 						elm.addClass(angular.isArray(value) ? value.join(' ') : value);
+					}
+					if (valueRemoved)
+					{
+						elm.removeClass(angular.isArray(valueRemoved) ? valueRemoved.join(' ') : valueRemoved);
 					}
 				};
 
@@ -183,7 +190,7 @@
 							var binder = this.queue.shift();
 							if (!binder.dead)
 							{
-								var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
+								var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value) || '';
 								this.runBinder(binder, value);
 
 								if (this.keepBinders)
