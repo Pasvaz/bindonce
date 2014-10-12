@@ -109,7 +109,7 @@
 					checkBindonce: function (value)
 					{
 						var that = this, promise = (value.$promise) ? value.$promise.then : value.then;
-						// since Angular 1.2 promises are no longer 
+						// since Angular 1.2 promises are no longer
 						// undefined until they don't get resolved
 						if (typeof promise === 'function')
 						{
@@ -214,7 +214,7 @@
 					}
 				};
 
-				return ctrl;
+				angular.extend(this, ctrl);
 			}],
 
 			link: function (scope, elm, attrs, bindonceController)
