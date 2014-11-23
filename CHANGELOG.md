@@ -2,6 +2,7 @@
 ### Bug Fixes
 - **Angular 1.3 compatibility**
 
+<hr />
 # 0.3.1 (2014-02-12)
 ### Features
 - **bo-bind:**
