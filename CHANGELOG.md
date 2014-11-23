@@ -1,3 +1,7 @@
+# 0.3.2 (2014-11-23)
+### Bug Fixes
+- **Angular 1.3 compatibility**
+
 # 0.3.1 (2014-02-12)
 ### Features
 - **bo-bind:**
