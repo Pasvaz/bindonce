@@ -1,3 +1,9 @@
+# 0.3.3 (2014-02-12)
+### Features
+- **bo-disabled:**
+  - Add support for ng-disabled/bo-disabled #110
+
+<hr />
 # 0.3.2 (2014-11-23)
 ### Bug Fixes
 - **Angular 1.3 compatibility**

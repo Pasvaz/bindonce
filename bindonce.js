@@ -2,7 +2,7 @@
 	"use strict";
 	/**
 	 * Bindonce - Zero watches binding for AngularJs
-	 * @version v0.3.2
+	 * @version v0.3.3
 	 * @link https://github.com/Pasvaz/bindonce
 	 * @author Pasquale Vazzana <pasqualevazzana@gmail.com>
 	 * @license MIT License, http://www.opensource.org/licenses/MIT
