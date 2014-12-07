@@ -101,6 +101,7 @@ Consequentially you can use any valid angular expression, including filters. Thi
 | `bo-switch = "expression"`     | equivalent to `ng-switch` but doesn't use watchers |`<div bo-switch="Person.isPublic">` `<span bo-switch-when="'yes">public</span>` `<span bo-switch-default>private</span>` `</div>`|
 | `bo-show = "condition"`     | equivalent to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
 | `bo-hide = "condition"`     | equivalent to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
+| `bo-disabled = "condition"`     | equivalent to `ng-disabled` but doesn't use watchers |`<ANY bo-disabled="Person.isUnavailable"></ANY>`|
 | `bo-text = "text"`      | evaluates "text" and print it as text inside the element | `<span bo-text="Person.name"></span>` |
 | `bo-bind = "text"`      | alias for `bo-text`, equivalent to `ng-bind` but doesn't use watchers | `<span bo-bind="Person.name"></span>` |
 | `bo-html = "markup"`      | evaluates "markup" and render it as html inside the element |`bo-html="Person.description"`|
