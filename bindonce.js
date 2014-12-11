@@ -2,7 +2,7 @@
     "use strict";
     /**
      * Bindonce - Zero watches binding for AngularJs
-     * @version v0.3.1
+     * @version v0.3.3
      * @link https://github.com/Pasvaz/bindonce
      * @author Pasquale Vazzana <pasqualevazzana@gmail.com>
      * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -137,7 +137,7 @@
 
                         checkBindonce: function (value) {
                             var promise = (value.$promise) ? value.$promise.then : value.then;
-                            // since Angular 1.2 promises are no longer 
+                            // since Angular 1.2 promises are no longer
                             // undefined until they don't get resolved
                             if (typeof promise === 'function') {
                                 promise(ctrl.ready);
@@ -253,6 +253,9 @@
                             case 'style':
                                 binder.element.css(value);
                                 break;
+                            case 'disabled':
+                                binder.element.prop('disabled', value);
+                                break;
                             case 'src':
                                 binder.element.attr(binder.attr, value);
                                 if (msie) {
@@ -358,7 +361,7 @@
                         }
                     };
 
-                    return ctrl;
+                    angular.extend(this, ctrl);
    }],
 
             link: function (scope, elm, attrs, bindonceController) {
@@ -438,6 +441,10 @@
             {
                 directiveName: 'boStyle',
                 attribute: 'style'
+            },
+            {
+                directiveName: 'boDisabled',
+                attribute: 'disabled'
             },
             {
                 directiveName: 'boValue',
