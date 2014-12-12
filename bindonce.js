@@ -181,9 +181,9 @@
                                     if (this.keepBinders) {
                                         this.refreshQueue.push(binder);
                                         binder.stopRefresh = function () {
-                                            // console.log('Destroy stopRefresh', binder);
+                                            //console.log('Destroy stopRefresh', binder);
                                             this.refreshQueue[indexOf(this.refreshQueue, binder)] = null;
-                                        };
+                                        }.bind(this);
                                     }
                                 }
                                 // console.log('after adding', binder, this.keepBinders, this.refreshQueue);
@@ -229,7 +229,7 @@
                                             transclude(selectedBinder, !binder.attrs.boNoScope, this.keepBinders);
                                             // console.log('created selectedBinder', selectedBinder);
                                         }
-                                    });
+                                    }.bind(this));
                                 }
                                 break;
                             case 'boSwitchWhen':
