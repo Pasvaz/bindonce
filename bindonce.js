@@ -66,6 +66,7 @@
                     };
 
                     var transclude = function (binder, newScope, saveNodes) {
+                        console.log('transclude');
                         if (newScope) {
                             binder.newScope = binder.scope.$new();
                         }
@@ -98,93 +99,98 @@
                         keepBinders: false,
 
                         ready: function () {
-                            // console.log('Ready to go', ctrl.queue);
-                            ctrl.isReady = true;
-                            ctrl.runBinders();
-                            ctrl.refreshOn && $scope.$on(ctrl.refreshOn, ctrl.refresher);
-                        },
+                            //console.log('Ready to go', this.queue);
+                            this.isReady = true;
+                            this.runBinders();
+                            this.refreshOn && $scope.$on(this.refreshOn, this.refresher);
+                        }.bind(this),
 
                         addBinder: function (binder) {
                             if (this.group && this.group != binder.group) {
                                 return;
                             }
 
-                            // console.log('Adding', binder, ' to ', this.queue);
+                            //console.log('Adding', binder, ' to ', this.queue);
                             this.queue.push(binder);
                             if (!this.isReady || this.queue.length > 1) {
+                                //console.log("not running binders", this.isReady, this.queue.length);
+                                //console.log(this);
+                                //console.log(ctrl);
                                 return;
                             }
-
+                            //console.log("about to run binders");
                             this.runBinders();
-                        },
+                        }.bind(this),
 
                         setupWatcher: function (bindonceValue) {
                             this.watcherRemover = $scope.$watch(bindonceValue, function (newValue) {
                                 if (newValue === undefined) {
                                     return;
                                 }
-                                // console.log('Ran from Watcher');
+                                //console.log('Ran from Watcher');
 
-                                !ctrl.oneWatcher && ctrl.removeWatcher();
+                                !this.oneWatcher && this.removeWatcher();
 
-                                if (!ctrl.isReady) {
-                                    ctrl.checkBindonce(newValue);
+                                if (!this.isReady) {
+                                    this.checkBindonce(newValue);
                                 } else {
-                                    ctrl.refresher();
+                                    this.refresher();
                                 }
                             }, true);
-                        },
+                        }.bind(this),
 
                         checkBindonce: function (value) {
                             var promise = (value.$promise) ? value.$promise.then : value.then;
                             // since Angular 1.2 promises are no longer
                             // undefined until they don't get resolved
                             if (typeof promise === 'function') {
-                                promise(ctrl.ready);
+                                promise(this.ready);
                             } else {
-                                ctrl.ready();
+                                this.ready();
                             }
-                        },
+                        }.bind(this),
 
                         removeWatcher: function () {
                             if (this.watcherRemover !== undefined) {
                                 this.watcherRemover();
                                 this.watcherRemover = undefined;
                             }
-                        },
+                        }.bind(this),
 
                         destroy: function () {
-                            ctrl.queue = [];
-                            ctrl.refreshQueue = [];
-                            ctrl.element = undefined;
-                            ctrl.removeWatcher();
-                        },
+                            this.queue = [];
+                            this.refreshQueue = [];
+                            this.element = undefined;
+                            this.removeWatcher();
+                        }.bind(this),
 
                         runBinders: function () {
+                            //console.log('runBinders');
                             while (this.queue.length > 0) {
                                 var binder = this.queue.shift();
                                 if (!binder.dead) {
                                     var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
+                                    //console.log(value);
                                     this.runBinder(binder, value);
 
                                     if (this.keepBinders) {
                                         this.refreshQueue.push(binder);
                                         binder.stopRefresh = function () {
                                             // console.log('Destroy stopRefresh', binder);
-                                            ctrl.refreshQueue[indexOf(ctrl.refreshQueue, binder)] = null;
+                                            this.refreshQueue[indexOf(this.refreshQueue, binder)] = null;
                                         };
                                     }
                                 }
                                 // console.log('after adding', binder, this.keepBinders, this.refreshQueue);
                             }
-                        },
+                        }.bind(this),
 
                         runBinder: function (binder, value) {
-                            // console.log('Binder is', binder, value, binder.value);
+                            //console.log('Binder is', binder, value, binder.value);
                             switch (binder.attr) {
                             case 'boIf':
                                 if (toBoolean(value)) {
-                                    transclude(binder, !binder.attrs.boNoScope, ctrl.keepBinders);
+                                    transclude(binder, !binder.attrs.boNoScope, this.keepBinders);
                                 }
                                 break;
                             case 'boSwitch':
@@ -215,7 +221,7 @@
                                     binder.scope.$eval(binder.attrs.change); //TODO: document ng-change on bo-switch
                                     angular.forEach(binder.selectedBinders, function (selectedBinder) {
                                         if (selectedBinder.element) {
-                                            transclude(selectedBinder, !binder.attrs.boNoScope, ctrl.keepBinders);
+                                            transclude(selectedBinder, !binder.attrs.boNoScope, this.keepBinders);
                                             // console.log('created selectedBinder', selectedBinder);
                                         }
                                     });
@@ -283,7 +289,8 @@
 
                             // TODO: avoid runBinder if the value doesn't change
                             binder.lastValue = value;
-                        },
+                        }.bind(this),
+
                         destroyBinder: function (binder, value) {
                             var cleanSwtichCases = function (binder, cases) {
                                 for (var i = 0; i < cases.length; i++) {
@@ -332,33 +339,33 @@
                                 cleanSwtichCases(binder, cases);
                                 break;
                             }
-                        },
+                        }.bind(this),
 
                         // temporary code, I know it sucks... don't blame me
                         refresher: function () {
-                            // console.log('Refresh requested $on', ctrl);
-                            if (ctrl.refreshing) {
-                                // console.log('Refresh already in progress');
+                            //console.log('Refresh requested $on', this);
+                            if (this.refreshing) {
+                                console.log('Refresh already in progress');
                                 return;
                             }
 
                             // <drunk>
-                            ctrl.refreshing = true;
-                            var i, max = ctrl.refreshQueue.length;
+                            this.refreshing = true;
+                            var i, max = this.refreshQueue.length;
                             for (i = 0; i < max; i++) {
-                                // console.log('Going to refresh', binder, ctrl.refreshQueue);
-                                var binder = ctrl.refreshQueue[i];
+                                //console.log('Going to refresh', binder, ctrl.refreshQueue);
+                                var binder = this.refreshQueue[i];
                                 if (binder && !binder.dead) // it should never happens
                                 {
                                     // TODO: lastValue check goes here
                                     var value = binder.scope.$eval((binder.interpolate) ? $interpolate(binder.value) : binder.value);
-                                    ctrl.destroyBinder(binder, value);
-                                    ctrl.runBinder(binder, value);
+                                    this.destroyBinder(binder, value);
+                                    this.runBinder(binder, value);
                                 }
                             }
-                            ctrl.refreshing = false;
+                            this.refreshing = false;
                             // </drunk>
-                        }
+                        }.bind(this)
                     };
 
                     angular.extend(this, ctrl);
@@ -367,6 +374,11 @@
             link: function (scope, elm, attrs, bindonceController) {
                 var value = attrs.bindonce && scope.$eval(attrs.bindonce);
                 bindonceController.oneWatcher = attrs.hasOwnProperty('oneWatcher');
+                /*if (attrs.refreshOn) {
+                    console.log('refreshOn:', attrs.refreshOn);
+                    console.log(attrs.refreshOn);
+                    console.log(scope.$eval(attrs.refreshOn));
+                }*/
                 bindonceController.refreshOn = attrs.refreshOn && scope.$eval(attrs.refreshOn);
                 bindonceController.keepBinders = bindonceController.oneWatcher || bindonceController.refreshOn;
 
@@ -492,6 +504,7 @@
                     controller: boDirective.controller,
                     compile: function (tElement, tAttrs, transclude) {
                         return function (scope, elm, attrs, controllers) {
+                            //console.log('bindonce directive compile start');
                             var bindonceController = controllers[0];
 
                             // TODO: document this feature: bo-parent
@@ -529,7 +542,7 @@
                             // TODO: improve the the garbage collection
                             // this whole part must be rewritten
                             var binderDestroy = function () {
-                                // console.warn('Destroying', binder);
+                                //console.warn('Destroying', binder);
                                 if (binder !== null) {
                                     binder.dead = true;
                                     binder.stopRefresh && binder.stopRefresh();
@@ -542,6 +555,7 @@
                             bindonceController.addBinder(binder);
                             //scope.$on('$destroy', binderDestroy);
                             elm.bind('$destroy', binderDestroy);
+                            //console.log('bindonce directive compile end');
                         };
                     }
                 };
