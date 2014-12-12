@@ -51,17 +51,22 @@
                     };
 
                     var classBinder = function (elm, value) {
+                        var removals = [];
                         if (angular.isObject(value) && !angular.isArray(value)) {
-                            var results = [];
+                            var additions = [];
                             angular.forEach(value, function (value, index) {
                                 if (value) {
-                                    results.push(index);
+                                    additions.push(index);
+                                } else {
+                                    removals.push(index);
                                 }
                             });
-                            value = results;
                         }
-                        if (value) {
+                        if (additions) {
                             elm.addClass(angular.isArray(value) ? value.join(' ') : value);
+                        }
+                        if (removals.length > 0) {
+                            elm.removeClass(removals.join(' '));
                         }
                     };
 
