@@ -110,7 +110,16 @@
                             //console.log('Ready to go', this.queue);
                             this.isReady = true;
                             this.runBinders();
-                            this.refreshOn && $scope.$on(this.refreshOn, this.refresher);
+                            if (this.refreshOn !== undefined) {
+                                if (this.refreshOn.constructor === Array) {
+                                    for (var index = 0; index < this.refreshOn.length; index++) {
+                                        //console.log('registering to refresh on:', this.refreshOn[index]);
+                                        $scope.$on(this.refreshOn[index], this.refresher);
+                                    }
+                                } else {
+                                    $scope.$on(this.refreshOn, this.refresher);
+                                }
+                            }
                         }.bind(this),
 
                         addBinder: function (binder) {
@@ -387,7 +396,10 @@
                     console.log(attrs.refreshOn);
                     console.log(scope.$eval(attrs.refreshOn));
                 }*/
-                bindonceController.refreshOn = attrs.refreshOn && scope.$eval(attrs.refreshOn);
+                if (attrs.refreshOn) {
+                    bindonceController.refreshOn = attrs.refreshOn.split(" ");
+                    //console.log("refreshOn populated with:", bindonceController.refreshOn);
+                }
                 bindonceController.keepBinders = bindonceController.oneWatcher || bindonceController.refreshOn;
 
                 if (value !== undefined) {
