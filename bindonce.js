@@ -61,8 +61,11 @@
                                     removals.push(index);
                                 }
                             });
+                            if (additions.length > 0) {
+                                value = additions;   
+                            }
                         }
-                        if (additions) {
+                        if (value) {
                             elm.addClass(angular.isArray(value) ? value.join(' ') : value);
                         }
                         if (removals.length > 0) {
@@ -141,7 +144,7 @@
                                 } else {
                                     this.refresher();
                                 }
-                            }, true);
+                            }.bind(this), true);
                         }.bind(this),
 
                         checkBindonce: function (value) {
