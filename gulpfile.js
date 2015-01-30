@@ -9,11 +9,11 @@ var ngAnnotate = require('gulp-ng-annotate');
 
 gulp.task('scripts', function () {
   return gulp.src(['src/*.js'])
+    .pipe(ngAnnotate())
+    .pipe($.concat('bindonce.js'))
     .pipe(replace(/'use strict';/g, ''))
     .pipe(replace(/"use strict";/g, ''))
-    .pipe(ngAnnotate())
     .pipe(wrap("(function(){\n'use strict';\n<%= contents %>\n})();"))
-    .pipe($.concat('bindonce.js'))
     .pipe(gulp.dest('dist'))
     .pipe($.uglify({preserveComments: saveLicense}))
     .pipe($.rename('bindonce.min.js'))
