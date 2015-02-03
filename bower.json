@@ -1,7 +1,7 @@
 {
   "name": "angular-bindonce",
-  "version": "0.3.3",
-  "main": "bindonce.js",
+  "version": "0.3.4",
+  "main": "dist/bindonce.js",
   "description": "Zero watchers binding directives for AngularJS",
   "homepage": "https://github.com/Pasvaz/bindonce",
   "author": "Pasquale Vazzana <pasqualevazzana@gmail.com>",
@@ -13,9 +13,11 @@
   "ignore": [
     "**/.*",
     "node_modules",
-    "components"
+    "src",
+    "gulpfile.js"
   ],
   "dependencies": {
+    "angular": "1.2.x"
   },
   "keywords": [
     "angularjs",
