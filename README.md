@@ -98,7 +98,7 @@ Consequentially you can use any valid angular expression, including filters. Thi
 |------------|----------------|-----|
 | `bindonce="{somedata}"`| **bindonce** is the main directive. `{somedata}` is optional, and if present, forces bindonce to wait until `somedata` is defined before rendering its children  | `<div bindonce="Person">...<div>` |
 | `bo-if = "condition"`     | equivalent to `ng-if` but doesn't use watchers |`<ANY bo-if="Person.isPublic"></ANY>`|
-| `bo-switch = "expression"`     | equivalent to `ng-switch` but doesn't use watchers |`<div bo-switch="Person.isPublic">` `<span bo-switch-when="'yes">public</span>` `<span bo-switch-default>private</span>` `</div>`|
+| `bo-switch = "expression"`     | equivalent to `ng-switch` but doesn't use watchers |`<div bo-switch="Person.isPublic">` `<span bo-switch-when="yes">public</span>` `<span bo-switch-default>private</span>` `</div>`|
 | `bo-show = "condition"`     | equivalent to `ng-show` but doesn't use watchers |`<ANY bo-show="Person.isPublic"></ANY>`|
 | `bo-hide = "condition"`     | equivalent to `ng-hide` but doesn't use watchers |`<ANY bo-hide="Person.isPrivate"></ANY>`|
 | `bo-disabled = "condition"`     | equivalent to `ng-disabled` but doesn't use watchers |`<ANY bo-disabled="Person.isUnavailable"></ANY>`|
