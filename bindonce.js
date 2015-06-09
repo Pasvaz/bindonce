@@ -100,7 +100,7 @@
 						var that = this;
 						this.watcherRemover = $scope.$watch(bindonceValue, function (newValue)
 						{
-							if (newValue === undefined) return;
+							if (newValue === null || typeof(newValue) === "undefined") return;
 							that.removeWatcher();
 							that.checkBindonce(newValue);
 						}, true);
@@ -223,7 +223,7 @@
 			link: function (scope, elm, attrs, bindonceController)
 			{
 				var value = attrs.bindonce && scope.$eval(attrs.bindonce);
-				if (value !== undefined)
+				if (value !== null && typeof(value) !== "undefined")
 				{
 					bindonceController.checkBindonce(value);
 				}
