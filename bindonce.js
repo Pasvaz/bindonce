@@ -212,6 +212,12 @@
 									binder.element.attr(binder.attr, value);
 									break;
 							}
+
+							//emit once bound
+							if (binder.attrs['boEmit']) {
+								binder.scope.$emit('bo-finished');
+							}
+
 						}
 						this.ran = true;
 					}
