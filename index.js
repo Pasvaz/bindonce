@@ -1,2 +1,2 @@
 require('bindonce.js');
-module.exports = 'bindonce';
+module.exports = 'pasvaz.bindonce';
