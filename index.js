@@ -1,2 +1,2 @@
-require('bindonce.js');
+require('./bindonce.js');
 module.exports = 'pasvaz.bindonce';
