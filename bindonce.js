@@ -16,7 +16,7 @@
 		{
 			if (value && value.length !== 0)
 			{
-				var v = angular.lowercase("" + value);
+				var v = ("" + value).toLowerCase();
 				value = !(v === 'f' || v === '0' || v === 'false' || v === 'no' || v === 'n' || v === '[]');
 			}
 			else
@@ -26,10 +26,10 @@
 			return value;
 		};
 
-		var msie = parseInt((/msie (\d+)/.exec(angular.lowercase(navigator.userAgent)) || [])[1], 10);
+		var msie = parseInt((/msie (\d+)/.exec((navigator.userAgent).toLowerCase()) || [])[1], 10);
 		if (isNaN(msie))
 		{
-			msie = parseInt((/trident\/.*; rv:(\d+)/.exec(angular.lowercase(navigator.userAgent)) || [])[1], 10);
+			msie = parseInt((/trident\/.*; rv:(\d+)/.exec((navigator.userAgent).toLowerCase()) || [])[1], 10);
 		}
 
 		var bindonceDirective =
